@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_level_css %}
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.8.5/css/selectize.default.css">
+    <link rel="stylesheet" href="{% static 'vendors/css/ui-select/select.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/plugins/loaders/loaders.min.css' %}">
+{% endblock %}
+
+{% block page_level_js %}
+    <script src="{% static 'vendors/js/angularjs/underscore.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'vendors/js/angularjs/angularjs.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'vendors/js/angularjs/angular-sanitize.min.js' %}"></script>
+    <script src="{% static 'vendors/js/charts/chart.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'vendors/js/angularjs/angular-chart.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'vendors/js/ui-select/select.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'vendors/js/angularjs/dashboard.js' %}" type="text/javascript"></script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-body">
+                <iframe src="{{ superset_report_url }}" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0"></iframe>
+                {#                {% verbatim %}#}
+                {#                <section id="horizontal-form-layouts" ng-app="myApp" ng-controller="myCtrl">#}
+                {#                    <div class="row">#}
+                {#                        <div class="col-md-12">#}
+                {#                            <div class="card">#}
+                {#                                <div class="card-header">#}
+                {#                                    <div class="card-title">Stock Status</div>#}
+                {#                                </div>#}
+                {#                                <div class="card-content collpase show">#}
+                {#                                    <div class="card-body">#}
+                {#                                        <div class="row">#}
+                {#                                            <div class="col-md-3">#}
+                {#                                                <ui-select ng-model="selectedItem" on-select="onGeoZoneSelected($item, $model)">#}
+                {#                                                    <ui-select-match placeholder="Select Geographical Zone...">#}
+                {#                                                        <span ng-bind="$select.selected.name"></span>#}
+                {#                                                    </ui-select-match>#}
+                {#                                                    <ui-select-choices repeat="item in (itemArray | filter: $select.search) track by item.id">#}
+                {##}
+                {#                                                        <div>#}
+                {#                                                            <svg _ngcontent-pqv-c94="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ng-if="item.level=='CNT'" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 24" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);">#}
+                {#                                                                <path _ngcontent-pqv-c94="" x="0" y="0" fill="#007bff" d="M8.585 16.584l4.586-4.586l-4.586-4.586L10 5.998l6 6l-6 6l-1.414-1.414z" style="transform: translateX(0px);"></path><!---->#}
+                {#                                                                <rect _ngcontent-pqv-c94="" x="0" y="0" height="24" fill="#FFFFFF"></rect>#}
+                {#                                                            </svg>#}
+                {##}
+                {##}
+                {#                                                            <svg _ngcontent-ftx-c94="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ng-if="item.level=='RGN'" ng-style="item.level=='RGN' && {'margin-left':'10px'}" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 24" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);">#}
+                {#                                                                <path _ngcontent-ftx-c94="" x="0" y="0" fill="#007bff" d="M8.585 16.584l4.586-4.586l-4.586-4.586L10 5.998l6 6l-6 6l-1.414-1.414z" style="transform: translateX(0px);"></path>#}
+                {#                                                                <path _ngcontent-ftx-c94="" x="0" y="0" fill="#007bff" d="M8.585 16.584l4.586-4.586l-4.586-4.586L10 5.998l6 6l-6 6l-1.414-1.414z" style="transform: translateX(-5px);"></path><!---->#}
+                {#                                                                <rect _ngcontent-ftx-c94="" x="0" y="0" height="24" fill="#FFFFFF"></rect>#}
+                {#                                                            </svg>#}
+                {##}
+                {#                                                            <svg _ngcontent-ftx-c94="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ng-if="item.level=='DST'" ng-style="item.level=='DST' && {'margin-left':'20px'}" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 24" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);">#}
+                {#                                                                <path _ngcontent-ftx-c94="" x="0" y="0" fill="#007bff" d="M8.585 16.584l4.586-4.586l-4.586-4.586L10 5.998l6 6l-6 6l-1.414-1.414z" style="transform: translateX(0px);"></path>#}
+                {#                                                                <path _ngcontent-ftx-c94="" x="0" y="0" fill="#007bff" d="M8.585 16.584l4.586-4.586l-4.586-4.586L10 5.998l6 6l-6 6l-1.414-1.414z" style="transform: translateX(-5px);"></path>#}
+                {#                                                                <path _ngcontent-ftx-c94="" x="0" y="0" fill="#007bff" d="M8.585 16.584l4.586-4.586l-4.586-4.586L10 5.998l6 6l-6 6l-1.414-1.414z" style="transform: translateX(-10px);"></path><!---->#}
+                {#                                                                <rect _ngcontent-ftx-c94="" x="0" y="0" height="24" fill="#FFFFFF"></rect>#}
+                {#                                                            </svg>#}
+                {#                                                            <span ng-bind="item.name"></span>#}
+                {#                                                        </div>#}
+                {##}
+                {##}
+                {#                                                    </ui-select-choices>#}
+                {#                                                </ui-select>#}
+                {#                                            </div>#}
+                {#                                            <div class="col-md-6">#}
+                {#                                                <ui-select ng-model="selectedProduct" on-select="onProductSelected($item, $model)">#}
+                {#                                                    <ui-select-match placeholder="Select Product...">#}
+                {#                                                        <span ng-bind="$select.selected.name"></span>#}
+                {#                                                    </ui-select-match>#}
+                {#                                                    <ui-select-choices repeat="product in (productArray | filter: $select.search) track by product.id">#}
+                {#                                                        <span ng-bind="product.name"></span>#}
+                {#                                                    </ui-select-choices>#}
+                {#                                                </ui-select>#}
+                {#                                            </div>#}
+                {##}
+                {#                                            <div class="col-md-3">#}
+                {#                                                <ui-select multiple ng-model="selectedStatus" on-select="onStatusSelected($item, $model)" on-remove="onStatusRemoved($item, $model)">#}
+                {#                                                    <ui-select-match placeholder="Select Status...">#}
+                {#                                                        {{ $item.name }}#}
+                {#                                                    </ui-select-match>#}
+                {#                                                    <ui-select-choices repeat="status in (statusArray | filter: $select.search) track by status.id">#}
+                {#                                                        <span ng-bind="status.name"></span>#}
+                {#                                                    </ui-select-choices>#}
+                {#                                                </ui-select>#}
+                {#                                            </div>#}
+                {#                                        </div>#}
+                {##}
+                {#                                        <div class="row">#}
+                {##}
+                {#                                            <div class="col-md-12" ng-show="showStockStatusChartLoader">#}
+                {#                                                <div class="loader-wrapper">#}
+                {#                                                    <div class="loader-container">#}
+                {#                                                        <div class="folding-cube loader-blue-grey">#}
+                {#                                                            <div class="cube1 cube"></div>#}
+                {#                                                            <div class="cube2 cube"></div>#}
+                {#                                                            <div class="cube4 cube"></div>#}
+                {#                                                            <div class="cube3 cube"></div>#}
+                {#                                                        </div>#}
+                {#                                                    </div>#}
+                {#                                                </div>#}
+                {#                                            </div>#}
+                {##}
+                {#                                            <div class="col-md-12" ng-hide="showStockStatusChartLoader">#}
+                {#                                                <canvas class="chart chart-bar" chart-data="data" chart-colors="colors" chart-labels="labels"#}
+                {#                                                        chart-series="series" chart-click="onClick"></canvas>#}
+                {#                                            </div>#}
+                {#                                        </div>#}
+                {##}
+                {##}
+                {#                                    </div>#}
+                {#                                </div>#}
+                {#                            </div>#}
+                {#                        </div>#}
+                {#                    </div>#}
+                {#                    <div class="row">#}
+                {#                        <div class="col-md-12">#}
+                {#                            <div class="card">#}
+                {#                                <div class="card-header">#}
+                {#                                    <div class="card-title">#}
+                {#                                        Stock Trends#}
+                {#                                    </div>#}
+                {#                                    <div class="card-content collpase show">#}
+                {#                                        <div class="card-body">#}
+                {#                                            <div class="row">#}
+                {#                                                <div class="col-md-4">#}
+                {#                                                    <ui-select ng-model="selectedTrendGeoZone" on-select="onGeoZoneTrendSelected($item, $model)">#}
+                {#                                                        <ui-select-match placeholder="Select Geographical Zone...">#}
+                {#                                                            <span ng-bind="$select.selected.name"></span>#}
+                {#                                                        </ui-select-match>#}
+                {#                                                        <ui-select-choices repeat="item in (itemArray | filter: $select.search) track by item.id">#}
+                {#                                                            <div>#}
+                {#                                                                <svg _ngcontent-pqv-c94="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ng-if="item.level=='CNT'" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 24" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);">#}
+                {#                                                                    <path _ngcontent-pqv-c94="" x="0" y="0" fill="#007bff" d="M8.585 16.584l4.586-4.586l-4.586-4.586L10 5.998l6 6l-6 6l-1.414-1.414z" style="transform: translateX(0px);"></path><!---->#}
+                {#                                                                    <rect _ngcontent-pqv-c94="" x="0" y="0" height="24" fill="#FFFFFF"></rect>#}
+                {#                                                                </svg>#}
+                {#                                                                <svg _ngcontent-ftx-c94="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ng-if="item.level=='RGN'" ng-style="item.level=='RGN' && {'margin-left':'10px'}" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 24" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);">#}
+                {#                                                                    <path _ngcontent-ftx-c94="" x="0" y="0" fill="#007bff" d="M8.585 16.584l4.586-4.586l-4.586-4.586L10 5.998l6 6l-6 6l-1.414-1.414z" style="transform: translateX(0px);"></path>#}
+                {#                                                                    <path _ngcontent-ftx-c94="" x="0" y="0" fill="#007bff" d="M8.585 16.584l4.586-4.586l-4.586-4.586L10 5.998l6 6l-6 6l-1.414-1.414z" style="transform: translateX(-5px);"></path><!---->#}
+                {#                                                                    <rect _ngcontent-ftx-c94="" x="0" y="0" height="24" fill="#FFFFFF"></rect>#}
+                {#                                                                </svg>#}
+                {#                                                                <svg _ngcontent-ftx-c94="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ng-if="item.level=='DST'" ng-style="item.level=='DST' && {'margin-left':'20px'}" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 24" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);">#}
+                {#                                                                    <path _ngcontent-ftx-c94="" x="0" y="0" fill="#007bff" d="M8.585 16.584l4.586-4.586l-4.586-4.586L10 5.998l6 6l-6 6l-1.414-1.414z" style="transform: translateX(0px);"></path>#}
+                {#                                                                    <path _ngcontent-ftx-c94="" x="0" y="0" fill="#007bff" d="M8.585 16.584l4.586-4.586l-4.586-4.586L10 5.998l6 6l-6 6l-1.414-1.414z" style="transform: translateX(-5px);"></path>#}
+                {#                                                                    <path _ngcontent-ftx-c94="" x="0" y="0" fill="#007bff" d="M8.585 16.584l4.586-4.586l-4.586-4.586L10 5.998l6 6l-6 6l-1.414-1.414z" style="transform: translateX(-10px);"></path><!---->#}
+                {#                                                                    <rect _ngcontent-ftx-c94="" x="0" y="0" height="24" fill="#FFFFFF"></rect>#}
+                {#                                                                </svg>#}
+                {#                                                                <span ng-bind="item.name"></span>#}
+                {#                                                            </div>#}
+                {#                                                        </ui-select-choices>#}
+                {#                                                    </ui-select>#}
+                {#                                                </div>#}
+                {#                                                <div class="col-md-8">#}
+                {#                                                    <ui-select ng-model="selectedTrendProduct" on-select="onProductSelectedTrend($item, $model)">#}
+                {#                                                        <ui-select-match placeholder="Select Product...">#}
+                {#                                                            <span ng-bind="$select.selected.name"></span>#}
+                {#                                                        </ui-select-match>#}
+                {#                                                        <ui-select-choices repeat="product in (productArray | filter: $select.search) track by product.id">#}
+                {#                                                            <span ng-bind="product.name"></span>#}
+                {#                                                        </ui-select-choices>#}
+                {#                                                    </ui-select>#}
+                {#                                                </div>#}
+                {#                                            </div>#}
+                {#                                            <div class="row">#}
+                {#                                                <div class="col-md-12" ng-show="showStockTrendChartLoader">#}
+                {#                                                    <div class="loader-wrapper">#}
+                {#                                                        <div class="loader-container">#}
+                {#                                                            <div class="folding-cube loader-blue-grey">#}
+                {#                                                                <div class="cube1 cube"></div>#}
+                {#                                                                <div class="cube2 cube"></div>#}
+                {#                                                                <div class="cube4 cube"></div>#}
+                {#                                                                <div class="cube3 cube"></div>#}
+                {#                                                            </div>#}
+                {#                                                        </div>#}
+                {#                                                    </div>#}
+                {#                                                </div>#}
+                {#                                                <div class="col-md-12" ng-hide="showStockTrendChartLoader">#}
+                {#                                                    <canvas class="chart chart-line" chart-data="lineChartData" chart-colors="lineChartColors" chart-labels="lineChartLabels"#}
+                {#                                                            chart-series="lineChartSeries" chart-click="onLineChartClick"></canvas>#}
+                {#                                                </div>#}
+                {#                                            </div>#}
+                {#                                        </div>#}
+                {#                                    </div>#}
+                {#                                </div>#}
+                {#                            </div>#}
+                {#                        </div>#}
+                {#                    </div>#}
+                {#                </section>#}
+                {#                {% endverbatim %}#}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% if messages %}
+    {% for message in messages %}
+
+            <div class="bs-callout-success callout-border-right callout-bordered callout-transparent mt-1 p-1" ng-show="uploadSuccess">
+                <h4 class="{{ message.tags }}">Success!</h4>
+                <p>{{ message }}</p>
+            </div>
+
+{#        <div class="bs-callout-danger callout-border-right callout-bordered callout-transparent mt-1 p-1" ng-show="uploadErrorMessage.length">#}
+{#            <h4 class="danger">Error!</h4>#}
+{#            <ul>#}
+{#                <li ng-repeat="err in uploadErrorMessage" ng-bind-html="err | trustAsHtml"></li>#}
+{#            </ul>#}
+{#        </div>#}
+    {% endfor %}
+{% endif %}

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-header row">
+                <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
+                    <h3 class="content-header-title mb-0 d-inline-block">All Users</h3>
+                    <div class="row breadcrumbs-top d-inline-block">
+                    </div>
+                </div>
+                {% if perms.auth.add_user %}
+                    <div class="content-header-right col-md-6 col-12">
+                        <div class="dropdown float-md-right">
+                            <a href="{% url 'core:user-add' %}" class="btn btn-float btn-round btn-primary">Add User</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="content-body">
+                <!-- Zero configuration table -->
+                <section id="configuration">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                    <div class="heading-elements">
+                                    </div>
+                                </div>
+                                <div class="card-content collapse show">
+                                    <div class="card-body card-dashboard">
+                                        {% include 'messages.html' %}
+                                        <table class="table table-striped table-bordered sourced-data">
+                                            <thead>
+                                            <tr>
+                                                {#                                                <th>Name</th>#}
+                                                <th>Username</th>
+                                                <th>Email</th>
+                                                <th>Phone</th>
+                                                <th>Vendor</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for user in users %}
+
+                                                <tr>
+                                                    {#                                                    <td>{{ user.first_name }} {{ user.last_name }}</td>#}
+                                                    <td>{{ user.username }}</td>
+                                                    <td>{{ user.email }}</td>
+                                                    <td>{{ user.phone }}</td>
+                                                    <td>{{ user.vendor.name }}</td>
+                                                    <td>
+                                                        {% if user.is_active %}
+                                                            <span class="badge badge badge-success">Active</span>
+                                                        {% else %}
+                                                            <span class="badge badge badge-danger">Inactive</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if perms.auth.change_user %}
+                                                            <a href="{% url 'core:user-update' user.pk %}" data-toggle="tooltip" data-original-title="Edit" data-placement="top" class="btn btn-outline-primary btn-sm edit-item-btn">
+                                                                <i class="ft-edit"></i>
+                                                            </a>
+                                                            {#                                                         <a href="{% url 'core:user-update' user.pk %}"  data-placement="top" class="btn btn-outline-secondary btn-sm edit-item-btn">#}
+                                                            {#                                                            Roles#}
+                                                            {#                                                        </a>#}
+                                                            <a href="{% url 'core:user-admin-reset-password' user.pk %}" data-placement="top" class="btn btn-outline-warning btn-sm edit-item-btn">
+                                                                Reset password
+                                                            </a>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!--/ Zero configuration table -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

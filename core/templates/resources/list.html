@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_level_css %}
+{% endblock %}
+
+{% block page_level_js %}
+
+{% endblock %}
+
+
+{% block content %}
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-body">
+                <div class="row match-height">
+                    <div class="col-lg-12 col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Resources</h4>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body">
+                                    <div class="list-group">
+{#                                        <a href="#" class="list-group-item active">#}
+{#                                            {{ reports.stock_status_reports.label }}#}
+{#                                        </a>#}
+{#                                        {% for report in reports.stock_status_reports.reports %}#}
+{#                                        <a href="{% url 'core:report-detail' 'stock_status_reports' report.key %}" class="list-group-item list-group-item-action">{{ report.label }}</a>#}
+{#                                        {% endfor %}#}
+
+{#                                        <a href="#" class="list-group-item active">#}
+{#                                             {{ reports.consumption_reports.label }}#}
+{#                                        </a>#}
+{#                                        {% for report in reports.consumption_reports.reports %}#}
+{#                                        <a href="{% url 'core:report-detail' 'consumption_reports' report.key %}" class="list-group-item list-group-item-action">{{ report.label }}</a>#}
+{#                                        {% endfor %}#}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

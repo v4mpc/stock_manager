@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+    <script src="{% static 'vendors/js/jquery/jquery.min.js' %}"></script>
+
+    <script src="{% static 'vendors/js/angularjs/angularjs.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'vendors/js/angularjs/angular-sanitize.min.js' %}" type="text/javascript"></script>
+
+    <script src="{% static 'vendors/js/angularjs/angular-file-upload.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'vendors/js/angularjs/main.js' %}" type="text/javascript"></script>
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-header row">
+                <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
+                    <h3 class="content-header-title mb-0 d-inline-block">Upload Files</h3>
+{#                    <div class="row breadcrumbs-top d-inline-block">#}
+{#                        <div class="breadcrumb-wrapper col-12">#}
+{#                            <ol class="breadcrumb">#}
+{#                                <li class="breadcrumb-item"><a href="#">Home</a>#}
+{#                                </li>#}
+{#                                <li class="breadcrumb-item"><a href="#">Uploads</a>#}
+{#                            </ol>#}
+{#                        </div>#}
+{#                    </div>#}
+                </div>
+                <div class="content-header-right col-md-12 col-12">
+                    <div class="dropdown float-md-right">
+                    </div>
+                </div>
+            </div>
+            <div class="content-body">
+                {#  @include('partials._messages')#}
+                <!-- Basic form layout section start -->
+                <section id="horizontal-form-layouts">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                    <div class="heading-elements">
+                                    </div>
+                                </div>
+                                {% csrf_token %}
+                                <div class="card-content collpase show">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                                        <div class="heading-elements">
+                                                        </div>
+                                                    </div>
+                                                    {% csrf_token %}
+                                                    {% verbatim %}
+                                                    <div class="card-content collpase show" ng-app="myApp" ng-controller="myCtrl">
+                                                        <div class="card-body">
+                                                            <div class="bs-callout-success callout-border-right callout-bordered callout-transparent mt-1 p-1" ng-show="uploadSuccess">
+                                                                <h4 class="success">Success!</h4>
+                                                                <p>File Uploaded!</p>
+                                                            </div>
+                                                            <div class="bs-callout-danger callout-border-right callout-bordered callout-transparent mt-1 p-1" ng-show="uploadErrorMessage.length">
+                                                                <h4 class="danger">Upload Error!</h4>
+                                                                <ul>
+                                                                    <li ng-repeat="err in uploadErrorMessage" ng-bind-html="err | trustAsHtml" ></li>
+                                                                </ul>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <form class="form form-horizontal" method="POST" enctype="multipart/form-data">
+                                                                        <h4 class="form-section">
+                                                                            <i class="ft-align-left"></i> Upload File
+                                                                        </h4>
+                                                                        <div class="form-group row">
+                                                                            <label class="col-md-3 label-control" for="projectinput1">File type</label>
+                                                                            <div class="col-md-5">
+                                                                                <select class="form-control" ng-model="selectedDoc" ng-change="onDocumentChanged()" ng-options="option.name for option in docs">
+                                                                                    <option value="">--Select File Type--</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="col-md-4" ng-show="selectedDoc.value">
+                                                                                <a ng-href="/download/{{ selectedDoc.value }}/" target="_blank" class="btn" ng-attr-class="{{ selectedDoc.value && 'btn' || 'btn disabled' }}">
+                                                                                    <i class="ft-download"></i> Download Sample
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group row" ng-show="selectedDoc.value">
+                                                                            <label class="col-md-3 label-control"> Choose File</label>
+                                                                            <div class="col-md-5">
+                                                                                <input type="file" nv-file-select="" uploader="uploader"/><br/>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group row" ng-show="uploader.queue.length">
+                                                                            <label class="col-md-3 label-control">File Name </label>
+                                                                            <div class="col-md-5">
+                                                                                <label>
+                                                                                    <span ng-bind="uploader.queue[0].file.name"></span>
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group row" ng-show="uploader.queue.length">
+                                                                            <div class="col-md-3"></div>
+                                                                            <div class="col-md-2">
+                                                                                <button ng-click="uploader.queue[0].upload()" class="btn btn-primary">
+                                                                                    <i class="ft-save"></i> Upload
+                                                                                </button>
+                                                                            </div>
+                                                                            <div class="col-md-2">
+                                                                                <button ng-click="uploader.clearQueue()" class="btn btn-warning">
+                                                                                    <i class="ft-x"></i> Clear
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group row" ng-show="uploader.queue.length">
+                                                                            <label class="col-md-3 label-control"> Upload progress</label>
+                                                                            <div class="col-md-5">
+                                                                                <div class="progress" style="">
+                                                                                    <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endverbatim %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+{% endblock %}
