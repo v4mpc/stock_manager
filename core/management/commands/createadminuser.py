@@ -11,7 +11,7 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS("Creating user:admin with password:12345678")
         )
-        User.objects.create_superuser("admin", "admin@ai.co.tz", "12345678")
+        User.objects.create_superuser("admin", "admin@admin.com", "12345678")
 
     def handle(self, *args, **options):
         try:

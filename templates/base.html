@@ -3,12 +3,8 @@
 {#{% url 'pv_settings:pv-settings-vendor-list' as vendor_list_url %}#}
 {#{% url 'pv_settings:pv-settings-upload' as uploads_url %}#}
 {% url 'core:dashboard' as dashboard_url %}
-{% url 'core:uploads' as uploads_url %}
 {% url 'core:user-list' as user_list_url %}
-{% url 'core:vendor-list' as vendor_list_url %}
 {% url 'core:role-list' as role_list_url %}
-{% url 'core:geographic_zone-list' as geographic_zone_list_url %}
-{% url 'core:integration-list' as integration_list_url %}
 {% url 'core:reports' as reports_url %}
 {% url 'core:resources' as resources_url %}
 <!DOCTYPE html>
@@ -181,28 +177,8 @@
 <div class="main-menu menu-fixed menu-dark menu-accordion menu-shadow" data-scroll-to-active="true">
     <div class="main-menu-content">
         <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-            <li class="nav-item has-sub open">
+            <li class="nav-item">
                 <a href=""><i class="ft-pie-chart"></i><span class="menu-title bold-font" data-i18n="nav.dash.main">Dashboard</span></a>
-                <ul class="menu-content">
-                    <li>
-                        <a class="menu-item" href="{% url 'core:dashboard' 'facility' %}" data-i18n="nav.cards.card_statistics">
-                            <i class="ft-chevrons-right"></i>
-                            <span class="menu-title bold-font" data-i18n="nav.dash.main">Facility</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="menu-item" href="{% url 'core:dashboard' 'msd' %}" data-i18n="nav.cards.card_statistics">
-                            <i class="ft-chevrons-right"></i>
-                            <span class="menu-title bold-font" data-i18n="nav.dash.main">MSD</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="menu-item" href="{% url 'core:dashboard' 'vendor' %}" data-i18n="nav.cards.card_statistics">
-                            <i class="ft-chevrons-right"></i>
-                            <span class="menu-title bold-font" data-i18n="nav.dash.main">Vendor</span>
-                        </a>
-                    </li>
-                </ul>
             </li>
 
 
@@ -215,22 +191,10 @@
                     </a>
                 </li>
 
-            {% if perms.core.view_user or perms.auth.view_group or perms.core.upload_document or perms.core.view_integration_status %}
+            {% if perms.core.view_user or perms.auth.view_group %}
                 <li class="nav-item has-sub open">
                     <a href=""><i class="ft-settings"></i><span class="menu-title bold-font" data-i18n="nav.dash.main">Settings</span></a>
                     <ul class="menu-content">
-                        {% if perms.core.view_geographic_zone %}
-                            <li {% if request.get_full_path == geographic_zone_list_url %}class="active"{% endif %}>
-                                <a class="menu-item" href="{{ geographic_zone_list_url }}" data-i18n="nav.cards.card_statistics"><i class="ft-chevrons-right"></i>
-                                    <span class="menu-title bold-font" data-i18n="nav.dash.main">Geographic zones</span></a>
-                            </li>
-                        {% endif %}
-                        {% if perms.core.view_vendor %}
-                            <li {% if request.get_full_path == vendor_list_url %}class="active"{% endif %}>
-                                <a class="menu-item" href="{{ vendor_list_url }}" data-i18n="nav.cards.card_statistics"><i class="ft-chevrons-right"></i>
-                                    <span class="menu-title bold-font" data-i18n="nav.dash.main">Vendors</span></a>
-                            </li>
-                        {% endif %}
                         {% if perms.core.view_user %}
                             <li {% if request.get_full_path == user_list_url %}class="active"{% endif %}>
                                 <a class="menu-item" href="{{ user_list_url }}" data-i18n="nav.cards.card_statistics">
@@ -247,23 +211,6 @@
                                 </a>
                             </li>
                         {% endif %}
-                        {% if perms.core.upload_document %}
-                            <li {% if request.get_full_path == uploads_url %}class="active"{% endif %}>
-                                <a class="menu-item" href="{{ uploads_url }}" data-i18n="nav.cards.card_statistics">
-                                    <i class="ft-chevrons-right"></i>
-                                    <span class="menu-title bold-font" data-i18n="nav.dash.main">Uploads</span>
-                                </a>
-                            </li>
-                        {% endif %}
-
-                        {% if perms.core.view_integration_status %}
-                            <li {% if request.get_full_path == integration_list_url %}class="active"{% endif %}>
-                                <a class="menu-item" href="{{ integration_list_url }}" data-i18n="nav.cards.card_statistics">
-                                    <i class="ft-chevrons-right"></i>
-                                    <span class="menu-title bold-font" data-i18n="nav.dash.main">Integration Status</span>
-                                </a>
-                            </li>
-                        {% endif %}
                     </ul>
                 </li>
             {% endif %}
@@ -276,7 +223,7 @@
 <footer class="footer footer-static footer-light navbar-border navbar-shadow">
     <p class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
     <span class="float-md-left d-block d-md-inline-block">Copyright &copy;  {% now 'Y' %} {{ app_name }} By
-        <a class="text-bold-800 grey darken-2" href="https://insupplyhealth.com/" target="_blank">  inSupply Health</a>
+        <a class="text-bold-800 grey darken-2" href="https://insupplyhealth.com/" target="_blank"></a>
     </span>
         <span class="pull-right">Version 1.0.0</span>
     </p>
