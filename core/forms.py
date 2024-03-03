@@ -1,17 +1,17 @@
-
 from django import forms
 from django.contrib.auth.forms import (
     AuthenticationForm,
     UserCreationForm,
     UsernameField,
 )
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group, Permission, User
 from django.core.exceptions import ValidationError
-from django.forms import ModelForm, ModelMultipleChoiceField
+import arrow
+from django.forms import ModelForm, ModelMultipleChoiceField, HiddenInput
 from django_select2 import forms as s2forms
-
-from django.contrib.auth.models import AbstractUser, User
-from .util import generate_download_sample_names
+from .models import Product, StockCard, StockOnHand
+from django.core.exceptions import ValidationError
+from .util import get_stock_on_hand
 
 STOCK_STATUS = "SS"
 FILE_UPLOAD_CHOICES = [
@@ -24,22 +24,15 @@ TITLE_CHOICES = [
 ]
 
 PERMISSIONS_TO_SHOW = [
-    "upload_document",
     "view_dashboard",
     "view_reports",
-    "view_integration_status",
     "add_group",
     "change_group",
     "view_group",
     "add_user",
     "change_user",
-    "view_user",
-    "add_geographiczone",
-    "change_geographiczone",
-    "view_geographiczone",
+    "view_user"
 ]
-
-
 
 
 class MyModelChoiceField(ModelMultipleChoiceField):
@@ -52,7 +45,7 @@ class PermissionSelect(s2forms.Select2MultipleWidget):
         return "My Object #%i" % obj.id
 
     def create_option(
-        self, name, value, label, selected, index, subindex=None, attrs=None
+            self, name, value, label, selected, index, subindex=None, attrs=None
     ):
         option = super().create_option(
             name, value, label, selected, index, subindex, attrs
@@ -64,7 +57,6 @@ class PermissionSelect(s2forms.Select2MultipleWidget):
 
 class GroupsWidget(s2forms.ModelSelect2MultipleWidget):
     search_fields = ["name__icontains"]
-
 
 
 class UserProfileForm(forms.ModelForm):
@@ -100,7 +92,6 @@ class UserModelForm(forms.ModelForm):
             "first_name",
             "last_name",
             "email",
-
             "is_active",
             "is_superuser",
             "groups",
@@ -145,6 +136,79 @@ class CustomUserCreationForm(UserCreationForm):
             g.user_set.add(user)
 
 
+class ProductCreateForm(ModelForm):
+    class Meta:
+        model = Product
+        fields = ["name", "description", "unit_of_measure"]
+
+
+class AdjustForm(ModelForm):
+    stock_on_hand = forms.FloatField()
+
+    class Meta:
+        model = StockCard
+        fields = ["product", "quantity", "description", "transaction_type", "created_by"]
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        self.pk = kwargs.pop("pk")
+        self.product = Product.objects.get(pk=self.pk)
+        self.soh = get_stock_on_hand(self.product, arrow.now().today())
+        super(AdjustForm, self).__init__(*args, **kwargs)
+        # we can do better here, hiding forms input is not so secure, these fields should be added from backend on form submission
+        self.fields["description"].label = "Adjustment Reason"
+        self.fields["quantity"].label = "Quantity to Adjust"
+        self.fields["transaction_type"].initial = "DR"
+        self.fields["transaction_type"].disabled = True
+        self.fields['transaction_type'].widget = HiddenInput()
+        self.fields["created_by"].initial = self.request.user
+        self.fields["created_by"].disabled = True
+        self.fields['created_by'].widget = HiddenInput()
+        self.fields["stock_on_hand"].initial = self.soh
+        self.fields["stock_on_hand"].disabled = True
+        self.fields['product'].initial = self.product
+        self.fields["product"].disabled = True
+
+    def clean_quantity(self):
+        data = self.cleaned_data["quantity"]
+        if data == 0.0:
+            raise ValidationError("Adjustment can not be zero")
+        if (data + self.soh) < 0:
+            raise ValidationError("Can not adjust more than what you have.")
+        return data
+
+
+class ReceiveForm(ModelForm):
+    # stock_on_hand = forms.FloatField()
+
+    class Meta:
+        model = StockCard
+        fields = ["product", "quantity", "description", "transaction_type", "created_by"]
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super(ReceiveForm, self).__init__(*args, **kwargs)
+        # we can do better here, hiding forms input is not so secure, these fields should be added from backend on form submission
+        self.fields["description"].initial = "RECEIVE"
+        self.fields["quantity"].label = "Quantity to RECEIVE"
+        self.fields["description"].disabled = True
+        self.fields['description'].widget = HiddenInput()
+        self.fields["transaction_type"].initial = "DR"
+        self.fields["transaction_type"].disabled = True
+        self.fields['transaction_type'].widget = HiddenInput()
+        self.fields["created_by"].initial = self.request.user
+        self.fields["created_by"].disabled = True
+        self.fields['created_by'].widget = HiddenInput()
+        # self.fields["stock_on_hand"].initial = 0.0
+        # self.fields["stock_on_hand"].disabled = True
+
+    def clean_quantity(self):
+        data = self.cleaned_data["quantity"]
+        if data < 0.0:
+            raise ValidationError("Use positive number only")
+        return data
+
+
 class RoleForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(RoleForm, self).__init__(*args, **kwargs)
@@ -180,17 +244,3 @@ class AdminResetPasswordForm(UserCreationForm):
         model = User
         # exclude = ('first_name',)
         fields = ["username"]
-
-    # username = forms.CharField(max_length=100, disabled=True, required=False)
-    # password = forms.CharField(
-    #     strip=False,
-    #     widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
-    #     help_text=password_validators_help_text_html(),
-    # )
-    #
-    # def clean(self):
-    #     cleaned_data = super().clean()
-    #     password = cleaned_data.get("password")
-    #     validate_password(password)
-
-

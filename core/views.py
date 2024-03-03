@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -8,18 +10,25 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import CreateView, ListView
 from django.views.generic.edit import UpdateView
+from django.db import transaction
+import arrow
 
 from .forms import (
     AdminResetPasswordForm,
     CustomUserCreationForm,
-
+    ProductCreateForm,
     RoleForm,
     UserModelForm,
-    UserProfileForm,
+    UserProfileForm, ReceiveForm,AdjustForm
 
 )
 
+from core.util import *
+
+from .models import Product, Unit, StockOnHand
+
 User = get_user_model()
+
 
 def login_success(request):
     # if request.user.home_zone:
@@ -27,7 +36,7 @@ def login_success(request):
     #     if request.user.home_zone.code != "TZ":
     #         return redirect("/dashboard/zonal")
     #     else:
-    return redirect("/dashboard/facility")
+    return render(request, "dashboard.html")
     # else:
     # raise PermissionDenied()
 
@@ -135,12 +144,89 @@ class RoleUpdateView(
 
 class UserListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     template_name = "users/list.html"
-
     queryset = User.objects.all()
-    # paginate_by = 10
     context_object_name = "users"
     permission_required = ("core.view_user",)
 
+
+class ProductListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    template_name = "products/list.html"
+    queryset = Product.objects.all()
+    context_object_name = "products"
+    permission_required = ("core.view_product",)
+
+
+class ProductCreateView(
+    PermissionRequiredMixin, SuccessMessageMixin, CreateView, LoginRequiredMixin
+):
+    template_name = "products/add.html"
+    form_class = ProductCreateForm
+    permission_required = ("auth.add_product",)
+    success_message = "Role saved!"
+
+    def get_success_url(self):
+        return reverse("core:product-list")
+
+
+class ReceiveCreateView(
+    PermissionRequiredMixin, SuccessMessageMixin, CreateView, LoginRequiredMixin
+):
+    template_name = "receive/add.html"
+    form_class = ReceiveForm
+    permission_required = ("auth.add_product",)
+    success_message = "Transaction saved!"
+
+    def get_form_kwargs(self):
+        kwargs = super(ReceiveCreateView, self).get_form_kwargs()
+        kwargs.update({'request': self.request})
+        return kwargs
+
+    @transaction.atomic
+    def form_valid(self, form):
+        update_stock_on_hand(form.instance.product, date.today(), form.instance.quantity, 'DR')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("core:receive")
+
+
+class StockAdjustCreateView(
+    PermissionRequiredMixin, SuccessMessageMixin, CreateView, LoginRequiredMixin
+):
+    template_name = "soh/add.html"
+    form_class = AdjustForm
+    permission_required = ("auth.add_product",)
+    success_message = "Transaction saved!"
+
+    def get_form_kwargs(self):
+        kwargs = super(StockAdjustCreateView, self).get_form_kwargs()
+        kwargs.update({'request': self.request})
+        kwargs.update({'pk': self.kwargs['pk']})
+        return kwargs
+
+    @transaction.atomic
+    def form_valid(self, form):
+        tx = 'DR'
+        if form.instance.quantity < 0:
+            tx = 'CR'
+        update_stock_on_hand(form.instance.product, date.today(), form.instance.quantity, tx)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("core:stock_on_hand")
+
+
+class ProductUpdateView(
+    PermissionRequiredMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView
+):
+    template_name = "products/add.html"
+    queryset = Product.objects.all()
+    form_class = ProductCreateForm
+    permission_required = ("auth.change_product",)
+    success_message = "Product saved!"
+
+    def get_success_url(self):
+        return reverse("core:product-list")
 
 
 class RoleListView(PermissionRequiredMixin, ListView, LoginRequiredMixin):
@@ -150,17 +236,31 @@ class RoleListView(PermissionRequiredMixin, ListView, LoginRequiredMixin):
     permission_required = ("auth.view_group",)
 
 
+def stock_on_hand_view(request):
+    products = Product.objects.all()
+    today = arrow.now().today()
+    sohs = []
+    for p in products:
+        model_soh = get_stock_on_hand(p, today)
+        sohs.append({'product': p.name, 'product_id': p.pk, 'unit': p.unit_of_measure.code, 'quantity': model_soh})
+        context = {'sohs': sohs}
+    return render(request, "soh/list.html", context)
 
-def dashboard_view(request, selected_dashboard_key: str):
-    selected_dashboard_key = selected_dashboard_key.lower()
-    available_keys = dashboard_mapper.keys()
-    if selected_dashboard_key not in available_keys:
-        raise Http404
 
-    context = {
-        "superset_report_url": dashboard_mapper[selected_dashboard_key],
-    }
-    return render(request, "dashboard.html", context)
+def adjust_stock_view(request, pk):
+    pass
+
+
+def dashboard_view(request):
+    # selected_dashboard_key = selected_dashboard_key.lower()
+    # available_keys = dashboard_mapper.keys()
+    # if selected_dashboard_key not in available_keys:
+    #     raise Http404
+    #
+    # context = {
+    #     "superset_report_url": dashboard_mapper[selected_dashboard_key],
+    # }
+    return render(request, "dashboard.html")
 
 
 # @permission_required("auth.change_user")
@@ -193,4 +293,3 @@ def handler500(request, *args, **argv):
     #                               context_instance=RequestContext(request))
     # response.status_code = 500
     # return response
-
