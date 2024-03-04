@@ -8,6 +8,7 @@
 {% url 'core:product-list' as product_list_url %}
 {% url 'core:reports' as reports_url %}
 {% url 'core:receive' as receive_url %}
+{% url 'core:expense' as expense_url %}
 {% url 'core:stock_on_hand' as stock_on_hand_url %}
 <!DOCTYPE html>
 <html class="loading" lang="en" data-textdirection="ltr">
@@ -193,7 +194,17 @@
                 <a href="{% url 'core:receive' %}"
                    {% if request.get_full_path == receive_url %}style="border-right: 4px solid #1E9FF2;"{% endif %}>
                     <i class="ft-download"></i>
-                    <span class="menu-title bold-font" data-i18n="nav.dash.main">Receive</span>
+                    <span class="menu-title bold-font" data-i18n="nav.dash.main">Buy</span>
+                </a>
+            </li>
+
+
+
+            <li class='nav-item {% if request.get_full_path == expense_url %}active{% endif %}'>
+                <a href="{% url 'core:expense' %}"
+                   {% if request.get_full_path == expsense_url %}style="border-right: 4px solid #1E9FF2;"{% endif %}>
+                    <i class="ft-credit-card"></i>
+                    <span class="menu-title bold-font" data-i18n="nav.dash.main">Expense</span>
                 </a>
             </li>
 

@@ -19,7 +19,8 @@ from .forms import (
     ProductCreateForm,
     RoleForm,
     UserModelForm,
-    UserProfileForm, ReceiveForm,AdjustForm
+    SaleForm,
+    UserProfileForm, ReceiveForm, AdjustForm,ExpenseForm
 
 )
 
@@ -216,6 +217,31 @@ class StockAdjustCreateView(
         return reverse("core:stock_on_hand")
 
 
+class StockSaleCreateView(
+    PermissionRequiredMixin, SuccessMessageMixin, CreateView, LoginRequiredMixin
+):
+    template_name = "soh/sale.html"
+    form_class = SaleForm
+    permission_required = ("auth.add_product",)
+    success_message = "Transaction saved!"
+
+    def get_form_kwargs(self):
+        kwargs = super(StockSaleCreateView, self).get_form_kwargs()
+        self.product = Product.objects.get(pk=self.kwargs['pk'])
+        kwargs.update({'request': self.request})
+        kwargs.update({'product': self.product})
+        return kwargs
+
+    @transaction.atomic
+    def form_valid(self, form):
+        tx = 'CR'
+        update_stock_on_hand(self.product, date.today(), form.instance.quantity, tx)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("core:stock_on_hand")
+
+
 class ProductUpdateView(
     PermissionRequiredMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView
 ):
@@ -234,6 +260,19 @@ class RoleListView(PermissionRequiredMixin, ListView, LoginRequiredMixin):
     queryset = Group.objects.all()
     context_object_name = "roles"
     permission_required = ("auth.view_group",)
+
+
+class ExpenseCreateView(
+    PermissionRequiredMixin, SuccessMessageMixin, CreateView, LoginRequiredMixin
+):
+    template_name = "expenses/add.html"
+    form_class = ExpenseForm
+    permission_required = ("auth.add_group",)
+    success_message = "Role saved!"
+
+    def get_success_url(self):
+        return reverse("core:expense")
+
 
 
 def stock_on_hand_view(request):

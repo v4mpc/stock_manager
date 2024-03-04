@@ -9,11 +9,12 @@
                     </div>
                 </div>
 
-                    <div class="content-header-right col-md-6 col-12">
-                        <div class="dropdown float-md-right">
-                            <a href="{% url 'core:product-add' %}" class="btn btn-float btn-round btn-primary">Add Product</a>
-                        </div>
+                <div class="content-header-right col-md-6 col-12">
+                    <div class="dropdown float-md-right">
+                        <a href="{% url 'core:product-add' %}" class="btn btn-float btn-round btn-primary">Add
+                            Product</a>
                     </div>
+                </div>
 
             </div>
             <div class="content-body">
@@ -23,7 +24,8 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                    <a class="heading-elements-toggle"><i
+                                            class="la la-ellipsis-v font-medium-3"></i></a>
                                     <div class="heading-elements">
                                     </div>
                                 </div>
@@ -33,7 +35,10 @@
                                             <thead>
                                             <tr>
                                                 <th>Name</th>
+                                                <th>Buy Price</th>
+                                                <th>Sale Price</th>
                                                 <th>Unit</th>
+
 
                                                 <th>Actions</th>
                                             </tr>
@@ -43,12 +48,17 @@
 
                                                 <tr>
                                                     <td>{{ product.name }}</td>
+                                                    <td>{{ product.sale_price }}</td>
+                                                    <td>{{ product.buy_price }}</td>
                                                     <td>{{ product.unit_of_measure.code }}</td>
                                                     <td>
 
-                                                            <a href="{% url 'core:product-update' product.pk %}" data-toggle="tooltip" data-original-title="Edit" data-placement="top" class="btn btn-outline-primary btn-sm edit-item-btn">
-                                                                Edit
-                                                            </a>
+                                                        <a href="{% url 'core:product-update' product.pk %}"
+                                                           data-toggle="tooltip" data-original-title="Edit"
+                                                           data-placement="top"
+                                                           class="btn btn-outline-primary btn-sm edit-item-btn">
+                                                            Edit
+                                                        </a>
 
                                                     </td>
                                                 </tr>

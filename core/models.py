@@ -53,6 +53,8 @@ class Product(models.Model):
         on_delete=models.RESTRICT,
         related_name="units",
     )
+    sale_price = models.FloatField()
+    buy_price = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -85,6 +87,38 @@ class StockCard(models.Model):
     class Meta:
         db_table = "stock_cards"
         ordering = ["-id"]
+
+
+class Sale(models.Model):
+    product_name = models.CharField(max_length=MAX_NAME_LENGTH, blank=False)
+    sale_price = models.FloatField()
+    buy_price = models.FloatField()
+    quantity = models.FloatField()
+    description = models.TextField(null=True, blank=True)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "sales"
+        ordering = ["-id"]
+        indexes = [
+            models.Index(fields=['created_at', 'product_name']),
+        ]
+
+
+class Expense(models.Model):
+    name = models.CharField(max_length=MAX_NAME_LENGTH, blank=False)
+    description = models.TextField(null=True, blank=True)
+    amount = models.FloatField()
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "expenses"
+        ordering = ["-id"]
+        indexes = [
+            models.Index(fields=['created_at']),
+        ]
 
 
 class StockOnHand(models.Model):

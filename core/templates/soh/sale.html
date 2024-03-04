@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
-{% url 'core:receive' as role_list_url %}
+{% url 'core:stock_on_hand' as role_list_url %}
 {% block content %}
     <div class="app-content content">
         <div class="content-wrapper">
             <div class="content-header row">
                 <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
-                    <h3 class="content-header-title mb-0 d-inline-block">Buy Stock</h3>
+                    <h3 class="content-header-title mb-0 d-inline-block">Sale Stock</h3>
                     <div class="row breadcrumbs-top d-inline-block">
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                                             <div class="col-md-12">
                                                 <form class="form form-horizontal" method="POST"
                                                       enctype="multipart/form-data">
-                                                    <h4 class="form-section"><i class="ft-align-left"></i> Buy Stock
+                                                    <h4 class="form-section"><i class="ft-align-left"></i> Sale Stock
                                                     </h4>
                                                     {% csrf_token %}
                                                     {{ form|crispy }}

@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 import arrow
 from django.forms import ModelForm, ModelMultipleChoiceField, HiddenInput
 from django_select2 import forms as s2forms
-from .models import Product, StockCard, StockOnHand
+from .models import Product, StockCard, StockOnHand, Sale, Expense
 from django.core.exceptions import ValidationError
 from .util import get_stock_on_hand
 
@@ -139,7 +139,7 @@ class CustomUserCreationForm(UserCreationForm):
 class ProductCreateForm(ModelForm):
     class Meta:
         model = Product
-        fields = ["name", "description", "unit_of_measure"]
+        fields = ["name", "sale_price", "buy_price", "description", "unit_of_measure"]
 
 
 class AdjustForm(ModelForm):
@@ -174,7 +174,7 @@ class AdjustForm(ModelForm):
         if data == 0.0:
             raise ValidationError("Adjustment can not be zero")
         if (data + self.soh) < 0:
-            raise ValidationError("Can not adjust more than what you have.")
+            raise ValidationError("Can not adjust more than available.")
         return data
 
 
@@ -244,3 +244,52 @@ class AdminResetPasswordForm(UserCreationForm):
         model = User
         # exclude = ('first_name',)
         fields = ["username"]
+
+
+class SaleForm(ModelForm):
+    stock_on_hand = forms.FloatField()
+
+    class Meta:
+        model = Sale
+        fields = ["product_name", "quantity", "buy_price", "sale_price", "description"]
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        # self.pk = kwargs.pop("pk")
+        self.product = kwargs.pop("product")
+        self.soh = get_stock_on_hand(self.product, arrow.now().today())
+        super(SaleForm, self).__init__(*args, **kwargs)
+        # we can do better here, hiding forms input is not so secure, these fields should be added from backend on form submission
+        self.fields["description"].label = "Description"
+        self.fields["quantity"].label = "Sale Quantity"
+        self.fields["sale_price"].label = "Sale Price"
+        self.fields["buy_price"].label = "Buy Price"
+
+        self.fields["sale_price"].initial = self.product.sale_price
+        self.fields["buy_price"].initial = self.product.buy_price
+
+        self.fields["sale_price"].disabled = True
+        self.fields["buy_price"].disabled = True
+
+        # self.fields["created_by"].initial = self.request.user
+        # self.fields["created_by"].disabled = True
+        # self.fields['created_by'].widget = HiddenInput()
+        self.fields["stock_on_hand"].initial = self.soh
+        self.fields["stock_on_hand"].disabled = True
+        self.fields['product_name'].initial = self.product.name
+        self.fields["product_name"].disabled = True
+
+    def clean_quantity(self):
+        data = self.cleaned_data["quantity"]
+        if data <= 0.0:
+            raise ValidationError("Sale quantity can not be less or equal to zero")
+        if data > self.soh:
+            raise ValidationError("Can not sale more than available.")
+
+        return data
+
+
+class ExpenseForm(ModelForm):
+    class Meta:
+        model = Expense
+        fields = ["name", "amount", "description"]

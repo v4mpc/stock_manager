@@ -52,6 +52,14 @@
                                                             Adjust
                                                         </a>
 
+
+                                                            <a href="{% url 'core:sale_stock' soh.product_id %}"
+                                                           data-toggle="tooltip" data-original-title="Sale"
+                                                           data-placement="top"
+                                                           class="btn btn-outline-warning btn-sm edit-item-btn">
+                                                            Sale
+                                                        </a>
+
                                                     </td>
                                                 </tr>
                                             {% endfor %}

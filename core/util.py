@@ -21,7 +21,7 @@ def update_stock_on_hand(product: Product, stock_date: date, quantity: float, tr
         if transaction_type == 'DR':
             obj.quantity += quantity
         else:
-            obj.quantity += quantity
+            obj.quantity -= quantity
         obj.save()
     except StockOnHand.DoesNotExist:
         new_values = {"product": product, "created_at": stock_date, "quantity": quantity}
