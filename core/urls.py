@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 from django.views.generic import RedirectView
+from .ajax_datatable_views import *
 
 from .views import *
 
@@ -12,11 +13,12 @@ urlpatterns = [
     path("dashboard/", dashboard_view, name="dashboard"),
     path("reports/", report_view, name="reports"),
     path("resources/", resource_view, name="resources"),
-    path(
-        "reports/<str:selected_report_type>/<str:selected_report_key>",
-        report_detail,
-        name="report-detail",
-    ),
+    # path(
+    #     "reports/<str:selected_report_key>",
+    #     report_detail,
+    #     name="report-detail",
+    # ),
+
     path("logout/", LogoutView.as_view(), name="logout"),
     path("users/", UserListView.as_view(), name="user-list"),
     path("products/", ProductListView.as_view(), name="product-list"),
@@ -40,5 +42,12 @@ urlpatterns = [
         "user-profile/<int:pk>/", UserUpdateProfileView.as_view(), name="user-profile"
     ),
     path("roles/<int:pk>/update/", RoleUpdateView.as_view(), name="role-update"),
+
+    # NON AJAX Requests
+    path("report/", report_view, name="reports"),
+
+    # AJAX requests
+    path('ajax_datatable/permissions/', PermissionAjaxDatatableView.as_view(),
+         name="ajax_datatable_permissions"),
 
 ]

@@ -12,6 +12,7 @@ from django.views.generic import CreateView, ListView
 from django.views.generic.edit import UpdateView
 from django.db import transaction
 import arrow
+from ajax_datatable.views import AjaxDatatableView
 
 from .forms import (
     AdminResetPasswordForm,
@@ -20,7 +21,7 @@ from .forms import (
     RoleForm,
     UserModelForm,
     SaleForm,
-    UserProfileForm, ReceiveForm, AdjustForm,ExpenseForm
+    UserProfileForm, ReceiveForm, AdjustForm, ExpenseForm
 
 )
 
@@ -43,8 +44,8 @@ def login_success(request):
 
 
 def report_view(request):
-    context = {"reports": reports_mapper}
-    return render(request, "reports/list.html", context=context)
+    context = {}
+    return render(request, "reports/detail.html", context=context)
 
 
 def resource_view(request):
@@ -272,7 +273,6 @@ class ExpenseCreateView(
 
     def get_success_url(self):
         return reverse("core:expense")
-
 
 
 def stock_on_hand_view(request):
