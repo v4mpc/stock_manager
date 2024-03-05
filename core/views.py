@@ -1,4 +1,5 @@
 from datetime import date
+from dataclasses import dataclass
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -14,6 +15,7 @@ from django.db import transaction
 import arrow
 from ajax_datatable.views import AjaxDatatableView
 
+from .ajax_datatable_views import ProductSaleAjaxDatatableView
 from .forms import (
     AdminResetPasswordForm,
     CustomUserCreationForm,
@@ -31,6 +33,21 @@ from .models import Product, Unit, StockOnHand
 
 User = get_user_model()
 
+report_list = [{
+    'product_sales': {}
+}]
+
+reports = [
+    ('core:product-sales', 'Product Sales Report'),
+    ('core:expenses', 'Expenses Report')
+]
+
+
+@dataclass
+class Report:
+    name: str
+    link: str
+
 
 def login_success(request):
     # if request.user.home_zone:
@@ -44,28 +61,22 @@ def login_success(request):
 
 
 def report_view(request):
-    context = {}
-    return render(request, "reports/detail.html", context=context)
+    rep = [Report(y, x) for x, y in reports]
+    print(rep)
+    context = {'reports': rep}
+    return render(request, "reports/list.html", context=context)
 
 
-def resource_view(request):
-    context = {"resources": resource_mapper}
-    return render(request, "resources/list.html", context=context)
+def product_sales(request):
+    return render(request, "reports/product_sales.html", context={})
+
+
+def expenses(request):
+    return render(request, "reports/expenses.html", context={})
 
 
 def index_view(request):
     return render(request, "index.html")
-
-
-def report_detail(request, selected_report_type, selected_report_key):
-    # TODO check if report key exist
-    reports = reports_mapper[selected_report_type]["reports"]
-    selected_report = list(filter(lambda r: r["key"] == selected_report_key, reports))[
-        0
-    ]
-    context = {"superset_link": selected_report["superset_link"]}
-
-    return render(request, "reports/detail.html", context=context)
 
 
 class UserCreateView(

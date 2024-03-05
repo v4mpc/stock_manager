@@ -222,6 +222,14 @@
                 </a>
             </li>
 
+            <li class='nav-item {% if request.get_full_path == reports_url %}active{% endif %}'>
+                <a href="{% url 'core:reports' %}"
+                   {% if request.get_full_path == reports_url %}style="border-right: 4px solid #1E9FF2;"{% endif %}>
+                    <i class="ft-book"></i>
+                    <span class="menu-title bold-font" data-i18n="nav.dash.main">Reports</span>
+                </a>
+            </li>
+
             {% if perms.core.view_user or perms.auth.view_group %}
                 <li class="nav-item has-sub open">
                     <a href=""><i class="ft-settings"></i><span class="menu-title bold-font" data-i18n="nav.dash.main">Settings</span></a>

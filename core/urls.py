@@ -11,8 +11,7 @@ urlpatterns = [
 
     # path('login/', views.LoginView.as_view(authentication_form=CustomAuthenticationForm), name='login'),
     path("dashboard/", dashboard_view, name="dashboard"),
-    path("reports/", report_view, name="reports"),
-    path("resources/", resource_view, name="resources"),
+    # path("reports/", report_view, name="reports"),
     # path(
     #     "reports/<str:selected_report_key>",
     #     report_detail,
@@ -44,10 +43,12 @@ urlpatterns = [
     path("roles/<int:pk>/update/", RoleUpdateView.as_view(), name="role-update"),
 
     # NON AJAX Requests
-    path("report/", report_view, name="reports"),
+    path("reports/", report_view, name="reports"),
+    path("product-sales/", product_sales, name="product-sales"),
+    path("expenses/", expenses, name="expenses"),
 
     # AJAX requests
-    path('ajax_datatable/permissions/', PermissionAjaxDatatableView.as_view(),
-         name="ajax_datatable_permissions"),
+    path('ajax-expenses/', ExpenseAjaxDatatableView.as_view(),
+         name="ajax-expenses"),
 
 ]
