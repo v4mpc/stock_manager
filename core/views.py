@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.auth.models import Group, User
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Sum, F
+from django.db.models.functions import TruncDay
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -46,11 +47,18 @@ reports = [
 
 ]
 
+import calendar
+
+
+def get_days_in_month(year, month):
+    return calendar.monthrange(year, month)[1]
+
 
 @dataclass
 class Report:
     name: str
     link: str
+
 
 @login_required
 def report_view(request):
@@ -59,17 +67,21 @@ def report_view(request):
     context = {'reports': rep}
     return render(request, "reports/list.html", context=context)
 
+
 @login_required
 def product_sales(request):
     return render(request, "reports/product_sales.html", context={})
+
 
 @login_required
 def product_sales_aggregate(request):
     return render(request, "reports/product_sales_aggregate.html", context={})
 
+
 @login_required
 def expenses(request):
     return render(request, "reports/expenses.html", context={})
+
 
 @login_required
 def index_view(request):
@@ -314,6 +326,7 @@ class ExpenseCreateView(
     def get_success_url(self):
         return reverse("core:expense")
 
+
 @login_required
 def stock_on_hand_view(request):
     products = Product.objects.filter(active=True)
@@ -329,18 +342,44 @@ def stock_on_hand_view(request):
 def adjust_stock_view(request, pk):
     pass
 
+
 @login_required
 def dashboard_view(request):
     today = arrow.now()
     sales_queryset = Sale.objects.filter(created_at__month=today.month)
     expenses_queryset = Expense.objects.filter(created_at__month=today.month)
+    days_in_month = get_days_in_month(today.year, today.month)
+    sales_trend_data = []
+    expenses_trend_data = []
+    label = []
+    for day in range(days_in_month):
+        day += 1
+        sales_sum = sales_queryset.filter(created_at__day=day).order_by('created_at').annotate(
+            sale=F('quantity') * F('sale_price')).aggregate(
+            total_sum=Sum('quantity'))
+        expenses_sum = expenses_queryset.filter(created_at__day=day).order_by('created_at').aggregate(
+            total_expense_sum=Sum('amount'))
+        date_string = arrow.get(today.year, int(today.month), day).format('D MMM')
+        label.append(date_string)
+        if sales_sum['total_sum'] is None:
+            sales_trend_data.append(0)
+        else:
+            sales_trend_data.append(sales_sum['total_sum'])
+
+        if expenses_sum['total_expense_sum'] is None:
+            expenses_trend_data.append(0)
+        else:
+            expenses_trend_data.append(expenses_sum['total_expense_sum'])
+
     top_ten_sales = sales_queryset.annotate(sale=F('quantity') * F('sale_price')).order_by('-sale')[:10]
     top_ten_expenses = expenses_queryset.order_by('-amount')[:10]
     sales = sales_queryset.annotate(sale=F('quantity') * F('sale_price')).aggregate(
         total_sales=Sum('sale'), total_sold=Sum('quantity'))
     total_expenses = expenses_queryset.aggregate(total_expenses=Sum('amount'))[
         'total_expenses']
-
+    print(sales_trend_data)
+    print(expenses_trend_data)
+    print(label)
     context = {
         'current_month': today.format('MMMM YYYY'),
         'total_sold': sales['total_sold'],
@@ -348,7 +387,10 @@ def dashboard_view(request):
         'total_expenses': total_expenses,
         'total_profit': sales['total_sales'] - total_expenses,
         'top_ten_sales': top_ten_sales,
-        'top_ten_expenses': top_ten_expenses
+        'top_ten_expenses': top_ten_expenses,
+        'sales_trend_data': sales_trend_data,
+        'expenses_trend_data':expenses_trend_data,
+        'chart_label': label
     }
 
     return render(request, "dashboard.html", context=context)
