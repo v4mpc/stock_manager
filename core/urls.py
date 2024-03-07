@@ -14,7 +14,7 @@ app_name = "core"
 urlpatterns = [
 
     path("login/", LoginView.as_view(), name="login"),
-    path("login_success/", login_success, name="login_success"),
+    # path("login_success/", login_success, name="login_success"),
     path("dashboard/", dashboard_view, name="dashboard"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("users/", UserListView.as_view(), name="user-list"),

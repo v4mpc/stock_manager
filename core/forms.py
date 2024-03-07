@@ -137,9 +137,26 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class ProductCreateForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ProductCreateForm, self).__init__(*args, **kwargs)
+        self.fields["active"].help_text = "Designates whether Product should show on  Adjustment, Buy, Sell and Stock on hand."
+
+
     class Meta:
         model = Product
-        fields = ["name", "sale_price", "buy_price", "description", "unit_of_measure"]
+        fields = ["name", "sale_price", "buy_price", "active", "description", "unit_of_measure"]
+
+    def clean_active(self):
+        active = self.cleaned_data["active"]
+        if not self.instance:
+            return active
+
+        soh = get_stock_on_hand(self.instance, arrow.now().today())
+        if soh > 0:
+            raise ValidationError(f"Product has stock of {soh}. Adjust/Sell to deactivate.")
+
+        return active
 
 
 class AdjustForm(ModelForm):

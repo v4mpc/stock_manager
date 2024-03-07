@@ -14,7 +14,13 @@ from core.models import (
 from django.conf import settings
 
 
+class UpdateStockOnInactiveProductException(Exception):
+    pass
+
+
 def update_stock_on_hand(product: Product, stock_date: date, quantity: float, transaction_type: str):
+    if not product.active:
+        raise UpdateStockOnInactiveProductException
     try:
         obj = StockOnHand.objects.get(product=product,
                                       created_at=stock_date)

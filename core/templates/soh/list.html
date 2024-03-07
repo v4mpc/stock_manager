@@ -4,7 +4,7 @@
         <div class="content-wrapper">
             <div class="content-header row">
                 <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
-                    <h3 class="content-header-title mb-0 d-inline-block">All Products </h3>
+                    <h3 class="content-header-title mb-0 d-inline-block">Active Products Stock on hand </h3>
                     <div class="row breadcrumbs-top d-inline-block">
                     </div>
                 </div>
@@ -25,7 +25,7 @@
                                 </div>
                                 <div class="card-content collapse show">
                                     <div class="card-body card-dashboard">
-                                    {% include 'messages.html' %}
+                                        {% include 'messages.html' %}
                                         <table class="table table-striped table-bordered sourced-data">
                                             <thead>
                                             <tr>
@@ -49,15 +49,15 @@
                                                         <a href="{% url 'core:adjust_stock' soh.product_id %}"
                                                            data-toggle="tooltip" data-original-title="Adjust"
                                                            data-placement="top"
-                                                           class="btn btn-outline-primary btn-sm edit-item-btn">
+                                                           class="btn btn-outline-primary btn-md edit-item-btn">
                                                             Adjust
                                                         </a>
 
 
-                                                            <a href="{% url 'core:sale_stock' soh.product_id %}"
+                                                        <a href="{% url 'core:sale_stock' soh.product_id %}"
                                                            data-toggle="tooltip" data-original-title="Sale"
                                                            data-placement="top"
-                                                           class="btn btn-outline-warning btn-sm edit-item-btn">
+                                                           class="btn btn-outline-warning btn-md edit-item-btn">
                                                             Sale
                                                         </a>
 

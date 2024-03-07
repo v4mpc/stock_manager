@@ -52,17 +52,6 @@ class Report:
     link: str
 
 
-def login_success(request):
-    # if request.user.home_zone:
-    #
-    #     if request.user.home_zone.code != "TZ":
-    #         return redirect("/dashboard/zonal")
-    #     else:
-    return render(request, "dashboard.html")
-    # else:
-    # raise PermissionDenied()
-
-
 def report_view(request):
     rep = [Report(y, x) for x, y in reports]
     print(rep)
@@ -294,7 +283,7 @@ class ExpenseCreateView(
 
 
 def stock_on_hand_view(request):
-    products = Product.objects.all()
+    products = Product.objects.filter(active=True)
     today = arrow.now().today()
     sohs = []
     for p in products:

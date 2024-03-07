@@ -55,6 +55,7 @@ class Product(models.Model):
     )
     sale_price = models.FloatField()
     buy_price = models.FloatField()
+    active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

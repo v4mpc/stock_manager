@@ -36,11 +36,10 @@
                                             <thead>
                                             <tr>
                                                 <th>Name</th>
+                                                <th>Unit</th>
                                                 <th>Buy Price</th>
                                                 <th>Sale Price</th>
-                                                <th>Unit</th>
-
-
+                                                <th>Status</th>
                                                 <th>Actions</th>
                                             </tr>
                                             </thead>
@@ -49,11 +48,21 @@
 
                                                 <tr>
                                                     <td>{{ product.name }}</td>
-                                                    <td>{{ product.sale_price }}</td>
-                                                    <td>{{ product.buy_price }}</td>
                                                     <td>{{ product.unit_of_measure.code }}</td>
+                                                    <td>{{ product.buy_price }}</td>
+                                                    <td>{{ product.sale_price }}</td>
                                                     <td>
+                                                        {% if product.active %}
+                                                            <div class="badge badge-success">Active</div>
+                                                        {% endif %}
 
+                                                        {% if not product.active %}
+                                                            <div class="badge badge-danger">Inactive</div>
+                                                        {% endif %}
+
+
+                                                    </td>
+                                                    <td>
                                                         <a href="{% url 'core:product-update' product.pk %}"
                                                            data-toggle="tooltip" data-original-title="Edit"
                                                            data-placement="top"

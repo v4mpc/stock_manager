@@ -5,12 +5,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
-from core.views import login_success
+
 urlpatterns = [
                   path("", include("core.urls")),
                   path("", RedirectView.as_view(url="login", permanent=True)),
                   path("login/", LoginView.as_view(), name="login"),
-                  path("login_success/", login_success, name="login_success"),
                   path("admin/", admin.site.urls),
                   path("select2/", include("django_select2.urls")),
                   path("password-reset/", PasswordResetView.as_view(), name="password-reset"),
