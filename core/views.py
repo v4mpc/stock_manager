@@ -24,7 +24,7 @@ from .forms import (
     RoleForm,
     UserModelForm,
     SaleForm,
-    UserProfileForm, ReceiveForm, AdjustForm, ExpenseForm
+    UserProfileForm, ReceiveForm, AdjustForm, ExpenseForm, UnitCreateForm
 
 )
 
@@ -177,6 +177,51 @@ class ProductCreateView(
         return reverse("core:product-list")
 
 
+class ProductUpdateView(
+    PermissionRequiredMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView
+):
+    template_name = "products/add.html"
+    queryset = Product.objects.all()
+    form_class = ProductCreateForm
+    permission_required = ("auth.change_product",)
+    success_message = "Product saved!"
+
+    def get_success_url(self):
+        return reverse("core:product-list")
+
+
+class UnitListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    template_name = "units/list.html"
+    queryset = Unit.objects.all()
+    context_object_name = "units"
+    permission_required = ("core.view_unit",)
+
+
+class UnitCreateView(
+    PermissionRequiredMixin, SuccessMessageMixin, CreateView, LoginRequiredMixin
+):
+    template_name = "units/add.html"
+    form_class = UnitCreateForm
+    permission_required = ("auth.add_unit",)
+    success_message = "Unit saved!"
+
+    def get_success_url(self):
+        return reverse("core:unit-list")
+
+
+class UnitUpdateView(
+    PermissionRequiredMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView
+):
+    template_name = "Units/add.html"
+    queryset = Unit.objects.all()
+    form_class = UnitCreateForm
+    permission_required = ("auth.change_unit",)
+    success_message = "Unit saved!"
+
+    def get_success_url(self):
+        return reverse("core:unit-list")
+
+
 class ReceiveCreateView(
     PermissionRequiredMixin, SuccessMessageMixin, CreateView, LoginRequiredMixin
 ):
@@ -248,19 +293,6 @@ class StockSaleCreateView(
 
     def get_success_url(self):
         return reverse("core:stock_on_hand")
-
-
-class ProductUpdateView(
-    PermissionRequiredMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView
-):
-    template_name = "products/add.html"
-    queryset = Product.objects.all()
-    form_class = ProductCreateForm
-    permission_required = ("auth.change_product",)
-    success_message = "Product saved!"
-
-    def get_success_url(self):
-        return reverse("core:product-list")
 
 
 class RoleListView(PermissionRequiredMixin, ListView, LoginRequiredMixin):

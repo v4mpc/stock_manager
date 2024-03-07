@@ -20,6 +20,11 @@ urlpatterns = [
     path("users/", UserListView.as_view(), name="user-list"),
     path("products/", ProductListView.as_view(), name="product-list"),
     path("products/add/", ProductCreateView.as_view(), name="product-add"),
+
+    path("units/", UnitListView.as_view(), name="unit-list"),
+    path("units/add/", UnitCreateView.as_view(), name="unit-add"),
+    path("units/<int:pk>/update/", UnitUpdateView.as_view(), name="unit-update"),
+
     path("receive/", ReceiveCreateView.as_view(), name="receive"),
     path("expense/", ExpenseCreateView.as_view(), name="expense"),
     path("stock_on_hand/", stock_on_hand_view, name="stock_on_hand"),

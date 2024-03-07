@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 import arrow
 from django.forms import ModelForm, ModelMultipleChoiceField, HiddenInput
 from django_select2 import forms as s2forms
-from .models import Product, StockCard, StockOnHand, Sale, Expense
+from .models import Product, StockCard, StockOnHand, Sale, Expense, Unit
 from django.core.exceptions import ValidationError
 from .util import get_stock_on_hand
 
@@ -136,12 +136,18 @@ class CustomUserCreationForm(UserCreationForm):
             g.user_set.add(user)
 
 
+class UnitCreateForm(ModelForm):
+    class Meta:
+        model = Unit
+        fields = ["code", "name"]
+
+
 class ProductCreateForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProductCreateForm, self).__init__(*args, **kwargs)
-        self.fields["active"].help_text = "Designates whether Product should show on  Adjustment, Buy, Sell and Stock on hand."
-
+        self.fields[
+            "active"].help_text = "Designates whether Product should show on  Adjustment, Buy, Sell and Stock on hand."
 
     class Meta:
         model = Product

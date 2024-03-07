@@ -6,6 +6,7 @@
 {% url 'core:user-list' as user_list_url %}
 {% url 'core:role-list' as role_list_url %}
 {% url 'core:product-list' as product_list_url %}
+{% url 'core:unit-list' as unit_list_url %}
 {% url 'core:reports' as reports_url %}
 {% url 'core:receive' as receive_url %}
 {% url 'core:expense' as expense_url %}
@@ -206,19 +207,13 @@
                 <li class="nav-item has-sub open">
                     <a href=""><i class="ft-settings"></i><span class="menu-title bold-font" data-i18n="nav.dash.main">Settings</span></a>
                     <ul class="menu-content">
-                        {% if perms.core.view_user %}
-                            <li {% if request.get_full_path == user_list_url %}class="active"{% endif %}>
-                                <a class="menu-item" href="{{ user_list_url }}" data-i18n="nav.cards.card_statistics">
-                                    <i class="ft-chevrons-right"></i>
-                                    <span class="menu-title bold-font" data-i18n="nav.dash.main">Users</span>
-                                </a>
-                            </li>
-                        {% endif %}
 
-                        <li {% if request.get_full_path == role_list_url %}class="active"{% endif %}>
-                            <a class="menu-item" href="{{ role_list_url }}" data-i18n="nav.cards.card_statistics">
+
+
+                       <li {% if request.get_full_path == unit_list_url %}class="active"{% endif %}>
+                            <a class="menu-item" href="{{ unit_list_url }}" data-i18n="nav.cards.card_statistics">
                                 <i class="ft-chevrons-right"></i>
-                                <span class="menu-title bold-font" data-i18n="nav.dash.main">Roles</span>
+                                <span class="menu-title bold-font" data-i18n="nav.dash.main">Units</span>
                             </a>
                         </li>
 
@@ -228,6 +223,25 @@
                                 <span class="menu-title bold-font" data-i18n="nav.dash.main">Products</span>
                             </a>
                         </li>
+
+                          <li {% if request.get_full_path == role_list_url %}class="active"{% endif %}>
+                            <a class="menu-item" href="{{ role_list_url }}" data-i18n="nav.cards.card_statistics">
+                                <i class="ft-chevrons-right"></i>
+                                <span class="menu-title bold-font" data-i18n="nav.dash.main">Roles</span>
+                            </a>
+                        </li>
+
+                        {% if perms.core.view_user %}
+                            <li {% if request.get_full_path == user_list_url %}class="active"{% endif %}>
+                                <a class="menu-item" href="{{ user_list_url }}" data-i18n="nav.cards.card_statistics">
+                                    <i class="ft-chevrons-right"></i>
+                                    <span class="menu-title bold-font" data-i18n="nav.dash.main">Users</span>
+                                </a>
+                            </li>
+                        {% endif %}
+
+
+
 
                     </ul>
                 </li>
