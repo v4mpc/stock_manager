@@ -154,36 +154,7 @@
                             </form>
                         </div>
                     </li>
-                    {#                    <li class="dropdown dropdown-notification nav-item">#}
-                    {#                        <a class="nav-link nav-link-label" href="#" id="notification" data-toggle="dropdown">#}
-                    {#                            <i class="ficon ft-bell"></i>#}
-                    {#                            <span class="badge badge-pill badge-default badge-danger badge-default badge-up badge-glow">4</span>#}
-                    {#                        </a>#}
-                    {#                        <ul class="dropdown-menu dropdown-menu-media dropdown-menu-right">#}
-                    {#                            <li class="scrollable-container media-list w-100">#}
-                    {#                                <span class="badge badge-pill badge-default badge-danger badge-default badge-up badge-glow">4</span>#}
-                    {#                                <ul class="dropdown-menu dropdown-menu-media dropdown-menu-right">#}
-                    {#                                    <li class="scrollable-container media-list w-100">#}
-                    {#                                        <a href="#">#}
-                    {#                                            <div class="media">#}
-                    {#                                                <div class="media-left align-self-center">#}
-                    {#                                                    <i class="ft-plus-square icon-bg-circle bg-cyan"></i>#}
-                    {#                                                </div>#}
-                    {#                                                <div class="media-body">#}
-                    {#                                                    <h6 class="media-heading">You have new account request!</h6>#}
-                    {#                                                    <small>#}
-                    {#                                                        <time class="media-meta text-muted"#}
-                    {#                                                              datetime="2015-06-11T18:29:20+08:00">2 days ago#}
-                    {#                                                        </time>#}
-                    {#                                                    </small>#}
-                    {#                                                </div>#}
-                    {#                                            </div>#}
-                    {#                                        </a>#}
-                    {#                                    </li>#}
-                    {#                                </ul>#}
-                    {#                            </li>#}
-                    {#                        </ul>#}
-                    {#                    </li>#}
+
                 </ul>
             </div>
         </div>
@@ -193,7 +164,8 @@
     <div class="main-menu-content">
         <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
             <li class="nav-item">
-                <a href=""><i class="ft-pie-chart"></i><span class="menu-title bold-font" data-i18n="nav.dash.main">Dashboard</span></a>
+                <a href="{% url 'core:dashboard' %}"><i class="ft-pie-chart"></i><span class="menu-title bold-font"
+                                                                                       data-i18n="nav.dash.main">Dashboard</span></a>
             </li>
 
 

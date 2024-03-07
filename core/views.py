@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group, User
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Sum, F
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -29,7 +30,7 @@ from .forms import (
 
 from core.util import *
 
-from .models import Product, Unit, StockOnHand
+from .models import Product, Unit, StockOnHand, Sale, Expense
 
 User = get_user_model()
 
@@ -39,7 +40,9 @@ report_list = [{
 
 reports = [
     ('core:product-sales', 'Product Sales Report'),
-    ('core:expenses', 'Expenses Report')
+    ('core:product-sales-aggregate', 'Product Sales Report (Aggregate)'),
+    ('core:expenses', 'Expenses Report'),
+
 ]
 
 
@@ -69,6 +72,10 @@ def report_view(request):
 
 def product_sales(request):
     return render(request, "reports/product_sales.html", context={})
+
+
+def product_sales_aggregate(request):
+    return render(request, "reports/product_sales_aggregate.html", context={})
 
 
 def expenses(request):
@@ -175,7 +182,7 @@ class ProductCreateView(
     template_name = "products/add.html"
     form_class = ProductCreateForm
     permission_required = ("auth.add_product",)
-    success_message = "Role saved!"
+    success_message = "Product saved!"
 
     def get_success_url(self):
         return reverse("core:product-list")
@@ -200,7 +207,7 @@ class ReceiveCreateView(
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("core:receive")
+        return reverse("core:stock_on_hand")
 
 
 class StockAdjustCreateView(
@@ -280,7 +287,7 @@ class ExpenseCreateView(
     template_name = "expenses/add.html"
     form_class = ExpenseForm
     permission_required = ("auth.add_group",)
-    success_message = "Role saved!"
+    success_message = "Transcation saved!"
 
     def get_success_url(self):
         return reverse("core:expense")
@@ -302,15 +309,27 @@ def adjust_stock_view(request, pk):
 
 
 def dashboard_view(request):
-    # selected_dashboard_key = selected_dashboard_key.lower()
-    # available_keys = dashboard_mapper.keys()
-    # if selected_dashboard_key not in available_keys:
-    #     raise Http404
-    #
-    # context = {
-    #     "superset_report_url": dashboard_mapper[selected_dashboard_key],
-    # }
-    return render(request, "dashboard.html")
+    today = arrow.now()
+    sales_queryset = Sale.objects.filter(created_at__month=today.month)
+    expenses_queryset = Expense.objects.filter(created_at__month=today.month)
+    top_ten_sales = sales_queryset.annotate(sale=F('quantity') * F('sale_price')).order_by('-sale')[:10]
+    top_ten_expenses = expenses_queryset.order_by('-amount')[:10]
+    sales = sales_queryset.annotate(sale=F('quantity') * F('sale_price')).aggregate(
+        total_sales=Sum('sale'), total_sold=Sum('quantity'))
+    total_expenses = expenses_queryset.aggregate(total_expenses=Sum('amount'))[
+        'total_expenses']
+
+    context = {
+        'current_month': today.format('MMMM YYYY'),
+        'total_sold': sales['total_sold'],
+        'total_sales': sales['total_sales'],
+        'total_expenses': total_expenses,
+        'total_profit': sales['total_sales'] - total_expenses,
+        'top_ten_sales': top_ten_sales,
+        'top_ten_expenses': top_ten_expenses
+    }
+
+    return render(request, "dashboard.html", context=context)
 
 
 # @permission_required("auth.change_user")

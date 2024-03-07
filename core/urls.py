@@ -2,22 +2,20 @@ from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 from django.views.generic import RedirectView
+
+from . import views
 from .ajax_datatable_views import *
+from django.contrib.auth.views import LoginView, LogoutView
+
 
 from .views import *
 
 app_name = "core"
 urlpatterns = [
 
-    # path('login/', views.LoginView.as_view(authentication_form=CustomAuthenticationForm), name='login'),
+    path("login/", LoginView.as_view(), name="login"),
+    path("login_success/", login_success, name="login_success"),
     path("dashboard/", dashboard_view, name="dashboard"),
-    # path("reports/", report_view, name="reports"),
-    # path(
-    #     "reports/<str:selected_report_key>",
-    #     report_detail,
-    #     name="report-detail",
-    # ),
-
     path("logout/", LogoutView.as_view(), name="logout"),
     path("users/", UserListView.as_view(), name="user-list"),
     path("products/", ProductListView.as_view(), name="product-list"),
@@ -45,9 +43,15 @@ urlpatterns = [
     # NON AJAX Requests
     path("reports/", report_view, name="reports"),
     path("product-sales/", product_sales, name="product-sales"),
+    path("product-sales-aggregate/", product_sales_aggregate, name="product-sales-aggregate"),
     path("expenses/", expenses, name="expenses"),
 
     # AJAX requests
+    path('ajax-product-sales/', ProductSaleAjaxDatatableView.as_view(),
+         name="ajax-product-sales"),
+
+    path('ajax-product-sales-aggregate/', ProductSaleAggregateAjaxDatatableView.as_view(),
+         name="ajax-product-sales-aggregate"),
     path('ajax-expenses/', ExpenseAjaxDatatableView.as_view(),
          name="ajax-expenses"),
 

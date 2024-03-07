@@ -126,7 +126,7 @@ MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
-LOGIN_REDIRECT_URL = "/login_success"
+LOGIN_REDIRECT_URL = "/dashboard"
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = LOGIN_URL
@@ -135,3 +135,4 @@ LOGOUT_REDIRECT_URL = LOGIN_URL
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+USE_THOUSAND_SEPARATOR = True
