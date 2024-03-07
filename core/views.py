@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group, User
 from django.contrib.messages.views import SuccessMessageMixin
@@ -51,26 +52,26 @@ class Report:
     name: str
     link: str
 
-
+@login_required
 def report_view(request):
     rep = [Report(y, x) for x, y in reports]
     print(rep)
     context = {'reports': rep}
     return render(request, "reports/list.html", context=context)
 
-
+@login_required
 def product_sales(request):
     return render(request, "reports/product_sales.html", context={})
 
-
+@login_required
 def product_sales_aggregate(request):
     return render(request, "reports/product_sales_aggregate.html", context={})
 
-
+@login_required
 def expenses(request):
     return render(request, "reports/expenses.html", context={})
 
-
+@login_required
 def index_view(request):
     return render(request, "index.html")
 
@@ -313,7 +314,7 @@ class ExpenseCreateView(
     def get_success_url(self):
         return reverse("core:expense")
 
-
+@login_required
 def stock_on_hand_view(request):
     products = Product.objects.filter(active=True)
     today = arrow.now().today()
@@ -328,7 +329,7 @@ def stock_on_hand_view(request):
 def adjust_stock_view(request, pk):
     pass
 
-
+@login_required
 def dashboard_view(request):
     today = arrow.now()
     sales_queryset = Sale.objects.filter(created_at__month=today.month)

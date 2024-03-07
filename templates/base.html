@@ -96,7 +96,7 @@
 </head>
 <body class="vertical-layout vertical-menu-modern 2-columns   menu-expanded fixed-navbar" data-open="click"
       data-menu="vertical-menu-modern"
-        {% if request.get_full_path == dashboard_url %} style="overflow-y: hidden"{% endif %}
+{#        {% if request.get_full_path == dashboard_url %} style="overflow-y: hidden"{% endif %}#}
       data-col="2-columns">
 <nav class="header-navbar navbar-expand-md navbar navbar-with-menu navbar-without-dd-arrow fixed-top navbar-dark bg-red navbar-shadow">
     <div class="navbar-wrapper">
@@ -107,7 +107,7 @@
                         class="ft-menu font-large-1"></i></a></li>
                 <li class="nav-item mr-auto">
                     <a class="navbar-brand" href="#">
-                        <h3 class="brand-text">{{ app_name }}</h3>
+                        <h3 class="brand-text">SMT</h3>
                     </a>
                 </li>
                 <li class="nav-item d-md-none">
@@ -138,11 +138,14 @@
                             <a class="dropdown-item"
                                href="{% url 'core:user-admin-reset-password' request.user.pk %}"><i class="ft-lock"></i>
                                 Change Password</a>
+
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{% url 'core:logout' %}"><i class="ft-power"></i> Logout
-                            </a>
-                            <form id="logout-form" action="#" method="POST" style="display: none;">
+                            <a class="dropdown-item" href="{% url 'core:logout' %}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="ft-power"></i> Logout
+                                 <form id="logout-form" action="{% url 'core:logout' %}" method="POST" style="display: none;">
+                                      {% csrf_token %}
                             </form>
+                            </a>
+
                         </div>
                     </li>
 

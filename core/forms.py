@@ -7,7 +7,7 @@ from django.contrib.auth.forms import (
 from django.contrib.auth.models import Group, Permission, User
 from django.core.exceptions import ValidationError
 import arrow
-from django.forms import ModelForm, ModelMultipleChoiceField, HiddenInput
+from django.forms import ModelForm, ModelMultipleChoiceField, HiddenInput, ChoiceField, ModelChoiceField
 from django_select2 import forms as s2forms
 from .models import Product, StockCard, StockOnHand, Sale, Expense, Unit
 from django.core.exceptions import ValidationError
@@ -180,7 +180,9 @@ class AdjustForm(ModelForm):
         super(AdjustForm, self).__init__(*args, **kwargs)
         # we can do better here, hiding forms input is not so secure, these fields should be added from backend on form submission
         self.fields["description"].label = "Adjustment Reason"
-        self.fields["quantity"].label = "Quantity to Adjust"
+        self.fields["quantity"].label = f"Quantity to adjust({self.product.unit_of_measure.code})"
+        self.fields[
+            "quantity"].help_text = "Negative(-) value will decrease stock e.g -80, Positive value will increase stock e.g 80."
         self.fields["transaction_type"].initial = "DR"
         self.fields["transaction_type"].disabled = True
         self.fields['transaction_type'].widget = HiddenInput()
@@ -188,6 +190,8 @@ class AdjustForm(ModelForm):
         self.fields["created_by"].disabled = True
         self.fields['created_by'].widget = HiddenInput()
         self.fields["stock_on_hand"].initial = self.soh
+        self.fields["stock_on_hand"].label = f"Stock on hand({self.product.unit_of_measure.code})"
+        self.fields["stock_on_hand"].help_text = f"Stock on hand as of now({arrow.now().format('YYYY-MM-DD,HH:mm')})."
         self.fields["stock_on_hand"].disabled = True
         self.fields['product'].initial = self.product
         self.fields["product"].disabled = True
@@ -201,19 +205,30 @@ class AdjustForm(ModelForm):
         return data
 
 
+class ProductSelectWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "name__icontains",
+        "description__icontains",
+    ]
+
+
 class ReceiveForm(ModelForm):
     # stock_on_hand = forms.FloatField()
 
     class Meta:
         model = StockCard
         fields = ["product", "quantity", "description", "transaction_type", "created_by"]
+        # widgets = {'product': ProductSelectWidget}
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
         super(ReceiveForm, self).__init__(*args, **kwargs)
         # we can do better here, hiding forms input is not so secure, these fields should be added from backend on form submission
         self.fields["description"].initial = "RECEIVE"
-        self.fields["quantity"].label = "Quantity to RECEIVE"
+        choices = Product.objects.filter(active=True)
+        self.fields["product"] = ModelChoiceField(queryset=choices, widget=ProductSelectWidget)
+        self.fields["quantity"].label = "Quantity to buy"
+        self.fields["quantity"].help_text = "Increase stock amount for selected product."
         self.fields["description"].disabled = True
         self.fields['description'].widget = HiddenInput()
         self.fields["transaction_type"].initial = "DR"
@@ -227,8 +242,8 @@ class ReceiveForm(ModelForm):
 
     def clean_quantity(self):
         data = self.cleaned_data["quantity"]
-        if data < 0.0:
-            raise ValidationError("Use positive number only")
+        if data <= 0.0:
+            raise ValidationError("Quantity must be greater than zero(0)")
         return data
 
 
@@ -284,9 +299,10 @@ class SaleForm(ModelForm):
         super(SaleForm, self).__init__(*args, **kwargs)
         # we can do better here, hiding forms input is not so secure, these fields should be added from backend on form submission
         self.fields["description"].label = "Description"
-        self.fields["quantity"].label = "Sale Quantity"
-        self.fields["sale_price"].label = "Sale Price"
-        self.fields["buy_price"].label = "Buy Price"
+        self.fields["quantity"].label = f"Sale quantity({self.product.unit_of_measure.code})"
+        self.fields["quantity"].help_text = "Sale quantity must be greater than Zero(0)"
+        self.fields["sale_price"].label = "Sale price(TZS)"
+        self.fields["buy_price"].label = "Buy price(TZS)"
 
         self.fields["sale_price"].initial = self.product.sale_price
         self.fields["buy_price"].initial = self.product.buy_price
@@ -299,7 +315,9 @@ class SaleForm(ModelForm):
         # self.fields['created_by'].widget = HiddenInput()
         self.fields["stock_on_hand"].initial = self.soh
         self.fields["stock_on_hand"].disabled = True
+        self.fields["stock_on_hand"].label = f"Stock on hand({self.product.unit_of_measure.code})"
         self.fields['product_name'].initial = self.product.name
+        self.fields["stock_on_hand"].help_text = f"Stock on hand as of now({arrow.now().format('YYYY-MM-DD,HH:mm')})."
         self.fields["product_name"].disabled = True
 
     def clean_quantity(self):
@@ -313,6 +331,16 @@ class SaleForm(ModelForm):
 
 
 class ExpenseForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ExpenseForm, self).__init__(*args, **kwargs)
+        self.fields["amount"].label = "Amount(TZS)"
+
     class Meta:
         model = Expense
         fields = ["name", "amount", "description"]
+
+    def clean_amount(self):
+        data = self.cleaned_data["amount"]
+        if data <= 0.0:
+            raise ValidationError("Amount must be greater than zero(0)")
+        return data
