@@ -80,6 +80,9 @@
             background-color: #F26522 !important;
             color: #FFF;
         }
+
+
+
     </style>
 
 
@@ -117,19 +120,6 @@
         <div class="navbar-container content">
             <div class="collapse navbar-collapse" id="navbar-mobile">
                 <ul class="nav navbar-nav mr-auto float-left">
-                    {#                    {% if request.user.home_zone %}#}
-                    {#                        <li class="nav-item d-md-block">#}
-                    {#                            <a class="nav-link">#}
-                    {#                                Home zone : <span><i>{{ request.user.home_zone.name }}</i></span>#}
-                    {#                            </a>#}
-                    {#                        </li>#}
-                    {#                    {% else %}#}
-                    {#                        <li class="nav-item d-md-block">#}
-                    {#                            <a class="nav-link">#}
-                    {#                                Home zone : <span><i>{Not set}</i></span>#}
-                    {#                            </a>#}
-                    {#                        </li>#}
-                    {#                    {% endif %}#}
                 </ul>
                 <ul class="nav navbar-nav float-right">
                     <li class="dropdown dropdown-user nav-item">
@@ -164,13 +154,13 @@
 <div class="main-menu menu-fixed menu-dark menu-accordion menu-shadow" data-scroll-to-active="true">
     <div class="main-menu-content">
         <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-            <li class="nav-item">
+            <li class="nav-item {% if request.get_full_path == dashboard_url %}active{% endif %}">
                 <a href="{% url 'core:dashboard' %}"><i class="ft-pie-chart"></i><span class="menu-title bold-font"
                                                                                        data-i18n="nav.dash.main">Dashboard</span></a>
             </li>
 
 
-            <li class='nav-item {% if request.get_full_path == reports_url %}active{% endif %}'>
+            <li class='nav-item {% if request.get_full_path == receive_url %}active{% endif %}'>
                 <a href="{% url 'core:receive' %}"
                    {% if request.get_full_path == receive_url %}style="border-right: 4px solid #1E9FF2;"{% endif %}>
                     <i class="ft-download"></i>
@@ -204,7 +194,7 @@
             </li>
 
             {% if perms.core.view_user or perms.auth.view_group %}
-                <li class="nav-item has-sub open">
+                <li class="nav-item has-sub">
                     <a href=""><i class="ft-settings"></i><span class="menu-title bold-font" data-i18n="nav.dash.main">Settings</span></a>
                     <ul class="menu-content">
 
