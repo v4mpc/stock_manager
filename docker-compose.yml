@@ -1,0 +1,97 @@
+version: '3.7'
+
+services:
+
+  web:
+    build:
+      context: ./
+      dockerfile: Dockerfile.prod
+    command: [ "/home/app/web/run_server.sh" ]
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+    expose:
+      - 8000
+    environment:
+      VIRTUAL_HOST: thevendorconnect.com
+      VIRTUAL_PORT: 8000
+      LETSENCRYPT_HOST: thevendorconnect.com
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - db
+  db:
+    image: postgres:13.0-alpine
+    volumes:
+      - postgres_data_new:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=vendor_connect_user
+      - POSTGRES_PASSWORD=vendor_connect_password_to_be_used
+      - POSTGRES_DB=vendor_connect
+
+  redis:
+    image: redis:7-alpine
+
+  celery:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: celery -A itn_portal worker -l info
+    volumes:
+      - ./:/usr/src/itn_portal/
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - db
+      - redis
+      - web
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: celery -A itn_portal beat -l info
+    volumes:
+      - ./:/usr/src/itn_portal/
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=django-insecure-#g7ng=%=s*@(q*engkt!tm%*zboy3f9fn^@6$bpkz_th(+2h=g
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+    depends_on:
+      - db
+      - redis
+      - web
+
+  vc-nginx-proxy:
+    build: ./nginx
+    container_name: vc-nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - vc-letsencrypt-certs:/etc/nginx/certs
+      - vc-letsencrypt-vhost-d:/etc/nginx/vhost.d
+      - vc-letsencrypt-html:/usr/share/nginx/html
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+
+  vc-letsencrypt-proxy:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: vc-letsencrypt-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - vc-letsencrypt-certs:/etc/nginx/certs
+      - vc-letsencrypt-vhost-d:/etc/nginx/vhost.d
+      - vc-letsencrypt-html:/usr/share/nginx/html
+    environment:
+      - DEFAULT_EMAIL=info@thevenderconnect.com
+      - NGINX_PROXY_CONTAINER=vc-nginx-proxy
+
+volumes:
+  postgres_data_new:
+  static_volume:
+  media_volume:
+  vc-letsencrypt-certs:
+  vc-letsencrypt-vhost-d:
+  vc-letsencrypt-html:
