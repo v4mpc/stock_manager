@@ -19,11 +19,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER=vendor_connect_user
-      - POSTGRES_PASSWORD=vendor_connect_password_to_be_used
-      - POSTGRES_DB=vendor_connect
-  redis:
-    image: redis:7-alpine
+      - POSTGRES_USER=smt_user
+      - POSTGRES_PASSWORD=smt_password_to_be_used
+      - POSTGRES_DB=smt
+#  redis:
+#    image: redis:7-alpine
 
 #  celery:
 #    restart: always
@@ -37,19 +37,19 @@ services:
 #      - db
 #      - redis
 #      - web
-  celery-beat:
-    build: ./
-    command: celery -A itn_portal beat -l info
-    volumes:
-     - ./:/usr/src/itn_portal/
-    environment:
-      - DEBUG=1
-      - SECRET_KEY=django-insecure-#g7ng=%=s*@(q*engkt!tm%*zboy3f9fn^@6$bpkz_th(+2h=g
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-    depends_on:
-      - db
-      - redis
-      - web
+#  celery-beat:
+#    build: ./
+#    command: celery -A itn_portal beat -l info
+#    volumes:
+#     - ./:/usr/src/itn_portal/
+#    environment:
+#      - DEBUG=1
+#      - SECRET_KEY=django-insecure-#g7ng=%=s*@(q*engkt!tm%*zboy3f9fn^@6$bpkz_th(+2h=g
+#      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+#    depends_on:
+#      - db
+#      - redis
+#      - web
 
 volumes:
   postgres_data:

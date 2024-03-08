@@ -387,12 +387,15 @@ def dashboard_view(request):
     print(sales_trend_data)
     print(expenses_trend_data)
     print(label)
+    total_profit = 0
+    if sales_profit['profit'] and total_expenses:
+        total_profit = sales_profit['profit'] - total_expenses
     context = {
         'current_month': today.format('MMMM YYYY'),
         'total_sold': quantity_sold['total_qty'],
         'total_sales': sales['total_sales'],
         'total_expenses': total_expenses,
-        'total_profit': sales_profit['profit'] - total_expenses,
+        'total_profit': total_profit,
         'top_ten_sales': top_ten_sales,
         'top_ten_expenses': top_ten_expenses,
         'sales_trend_data': sales_trend_data,

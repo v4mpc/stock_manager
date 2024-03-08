@@ -84,6 +84,18 @@ DATABASES = {
     }
 }
 
+#
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "smt",
+#         "USER": "smt_user",
+#         "PASSWORD": "smt_password_to_be_used",
+#         "HOST": "db",
+#         "PORT": "5432",
+#     }
+# }
+
 AUTH_USER_MODEL = "core.User"
 
 # Password validation
