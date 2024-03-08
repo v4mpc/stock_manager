@@ -42,7 +42,7 @@ report_list = [{
 
 reports = [
     ('core:product-sales', 'Product Sales Report'),
-    ('core:product-sales-aggregate', 'Product Sales Report (Aggregate)'),
+    # ('core:product-sales-aggregate', 'Product Sales Report (Aggregate)'),
     ('core:expenses', 'Expenses Report'),
 
 ]
@@ -274,9 +274,11 @@ class StockAdjustCreateView(
     @transaction.atomic
     def form_valid(self, form):
         tx = 'DR'
-        if form.instance.quantity < 0:
+        qty = float(form.instance.quantity)
+        if qty < 0:
             tx = 'CR'
-        update_stock_on_hand(form.instance.product, date.today(), form.instance.quantity, tx)
+            qty *= -1
+        update_stock_on_hand(form.instance.product, date.today(), qty, tx)
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -356,7 +358,7 @@ def dashboard_view(request):
         day += 1
         sales_sum = sales_queryset.filter(created_at__day=day).order_by('created_at').annotate(
             sale=F('quantity') * F('sale_price')).aggregate(
-            total_sum=Sum('quantity'))
+            total_sum=Sum('sale'))
         expenses_sum = expenses_queryset.filter(created_at__day=day).order_by('created_at').aggregate(
             total_expense_sum=Sum('amount'))
         date_string = arrow.get(today.year, int(today.month), day).format('D MMM')
@@ -374,7 +376,12 @@ def dashboard_view(request):
     top_ten_sales = sales_queryset.annotate(sale=F('quantity') * F('sale_price')).order_by('-sale')[:10]
     top_ten_expenses = expenses_queryset.order_by('-amount')[:10]
     sales = sales_queryset.annotate(sale=F('quantity') * F('sale_price')).aggregate(
-        total_sales=Sum('sale'), total_sold=Sum('quantity'))
+        total_sales=Sum('sale'))
+    sales_profit = sales_queryset.annotate(profit=(F("sale_price") - F("buy_price")) + F("sale_adjustment"),
+                                           total_profit=F('profit') * F('quantity')).aggregate(
+        profit=Sum('total_profit'))
+    quantity_sold = sales_queryset.aggregate(total_qty=Sum('quantity'))
+
     total_expenses = expenses_queryset.aggregate(total_expenses=Sum('amount'))[
         'total_expenses']
     print(sales_trend_data)
@@ -382,14 +389,14 @@ def dashboard_view(request):
     print(label)
     context = {
         'current_month': today.format('MMMM YYYY'),
-        'total_sold': sales['total_sold'],
+        'total_sold': quantity_sold['total_qty'],
         'total_sales': sales['total_sales'],
         'total_expenses': total_expenses,
-        'total_profit': sales['total_sales'] - total_expenses,
+        'total_profit': sales_profit['profit'] - total_expenses,
         'top_ten_sales': top_ten_sales,
         'top_ten_expenses': top_ten_expenses,
         'sales_trend_data': sales_trend_data,
-        'expenses_trend_data':expenses_trend_data,
+        'expenses_trend_data': expenses_trend_data,
         'chart_label': label
     }
 

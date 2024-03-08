@@ -10,18 +10,20 @@ from django.db import models
 class ProductSaleAjaxDatatableView(AjaxDatatableView):
     model = Sale
     title = 'Sales'
-    # initial_order = [["created_at", "asc"], ]
+    initial_order = [["created_at", "sale"], ]
+    show_date_filters = True
     length_menu = [[10, 20, 50, 100, -1], [10, 20, 50, 100, 'all']]
     search_values_separator = '+'
 
     column_defs = [
         # AjaxDatatableView.render_row_tools_column_def(),
         # {'name': 'id', 'visible': True, },
-        {'name': 'created_at', 'visible': True, 'title': 'Date'},
+        {'name': 'created_at', 'visible': True, 'title': 'Date','searchable': False},
         {'name': 'product_name', 'visible': True, },
-        {'name': 'quantity', 'visible': True, 'title': 'Sold QTY'},
         {'name': 'buy_price', 'visible': True, },
         {'name': 'sale_price', 'visible': True, },
+        {'name': 'quantity', 'visible': True, 'title': 'Sold QTY'},
+        {'name': 'sale_adjustment', 'visible': True, },
         {'name': 'profit', 'visible': True, 'title': 'Profit'},
         {'name': 'total_profit', 'visible': True, 'title': 'Total Profit'},
 
@@ -32,22 +34,51 @@ class ProductSaleAjaxDatatableView(AjaxDatatableView):
     #     return 'Selected rows: %d' % qs.aggregate(grand_total=Sum('total_profit'))['grand_total']
 
     def get_initial_queryset(self, request=None):
-        return Sale.objects.annotate(profit=F("sale_price") - F("buy_price"), total_profit=F('profit') * F('quantity'))
+        if not request.user.is_authenticated:
+            raise PermissionDenied
+        queryset = Sale.objects.annotate(profit=(F("sale_price") - F("buy_price")) + F("sale_adjustment"),
+                                         total_profit=F('profit') * F('quantity'))
+        # print(queryset)
+        if 'date_from' in request.REQUEST:
+            date_from = request.REQUEST.get('date_from')
+            queryset = queryset.filter(created_at__gte=date_from)
+        if 'date_to' in request.REQUEST:
+            date_to = request.REQUEST.get('date_to')
+            queryset = queryset.filter(created_at__lte=date_to)
+        return queryset
+
+    # def get_initial_queryset(self, request=None):
+    #     return Sale.objects.annotate(profit=(F("sale_price") - F("buy_price")) + F("sale_adjustment"),
+    #                                  total_profit=F('profit') * F('quantity'))
 
 
 class ExpenseAjaxDatatableView(AjaxDatatableView):
     model = Expense
     title = 'Expense'
+    show_date_filters = True
     initial_order = [["created_at", "dsc"], ]
     length_menu = [[10, 20, 50, 100, -1], [10, 20, 50, 100, 'all']]
     search_values_separator = '+'
 
     column_defs = [
-        {'name': 'created_at', 'visible': True, 'title': 'Date'},
+        {'name': 'created_at', 'visible': True, 'title': 'Date','searchable': False,},
         {'name': 'name', 'visible': True, },
         {'name': 'amount', 'visible': True},
 
     ]
+
+    def get_initial_queryset(self, request=None):
+        if not request.user.is_authenticated:
+            raise PermissionDenied
+        queryset = Expense.objects.all()
+
+        if 'date_from' in request.REQUEST:
+            date_from = request.REQUEST.get('date_from')
+            queryset = queryset.filter(created_at__gte=date_from)
+        if 'date_to' in request.REQUEST:
+            date_to = request.REQUEST.get('date_to')
+            queryset = queryset.filter(created_at__lte=date_to)
+        return queryset
 
 
 class ProductSaleAggregateAjaxDatatableView(AjaxDatatableView):

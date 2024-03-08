@@ -154,13 +154,14 @@ class ProductCreateForm(ModelForm):
         fields = ["name", "sale_price", "buy_price", "active", "description", "unit_of_measure"]
 
     def clean_active(self):
+        print(self.instance)
         active = self.cleaned_data["active"]
-        if not self.instance:
-            return active
-
-        soh = get_stock_on_hand(self.instance, arrow.now().today())
-        if soh > 0:
-            raise ValidationError(f"Product has stock of {soh}. Adjust/Sell to deactivate.")
+        # if not self.instance:
+        #     return active
+        #
+        # soh = get_stock_on_hand(self.instance, arrow.now().today())
+        # if soh > 0:
+        #     raise ValidationError(f"Product has stock of {soh}. Adjust/Sell to deactivate.")
 
         return active
 
@@ -212,13 +213,17 @@ class ProductSelectWidget(s2forms.ModelSelect2Widget):
     ]
 
 
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
+
 class ReceiveForm(ModelForm):
     # stock_on_hand = forms.FloatField()
 
     class Meta:
         model = StockCard
-        fields = ["product", "quantity", "description", "transaction_type", "created_by"]
-        # widgets = {'product': ProductSelectWidget}
+        fields = ["created_at", "product", "quantity", "description", "transaction_type", "created_by"]
+        widgets = {'created_at': DateInput()}
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
@@ -228,6 +233,7 @@ class ReceiveForm(ModelForm):
         choices = Product.objects.filter(active=True)
         self.fields["product"] = ModelChoiceField(queryset=choices, widget=ProductSelectWidget)
         self.fields["quantity"].label = "Quantity to buy"
+        self.fields["created_at"].label = "Date"
         self.fields["quantity"].help_text = "Increase stock amount for selected product."
         self.fields["description"].disabled = True
         self.fields['description'].widget = HiddenInput()
@@ -289,7 +295,8 @@ class SaleForm(ModelForm):
 
     class Meta:
         model = Sale
-        fields = ["product_name", "quantity", "buy_price", "sale_price", "description"]
+        fields = ["created_at", "product_name", "buy_price", "sale_price", "quantity", "sale_adjustment", "description"]
+        widgets = {'created_at': DateInput()}
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
@@ -299,8 +306,11 @@ class SaleForm(ModelForm):
         super(SaleForm, self).__init__(*args, **kwargs)
         # we can do better here, hiding forms input is not so secure, these fields should be added from backend on form submission
         self.fields["description"].label = "Description"
+        self.fields["created_at"].label = "Date"
         self.fields["quantity"].label = f"Sale quantity({self.product.unit_of_measure.code})"
         self.fields["quantity"].help_text = "Sale quantity must be greater than Zero(0)"
+        self.fields[
+            "sale_adjustment"].help_text = "Negative(-) value shall be discount, Positive values shall be Premium sale"
         self.fields["sale_price"].label = "Sale price(TZS)"
         self.fields["buy_price"].label = "Buy price(TZS)"
 
@@ -329,15 +339,24 @@ class SaleForm(ModelForm):
 
         return data
 
+    def clean_sale_adjustment(self):
+        data = self.cleaned_data["sale_adjustment"]
+
+        if data < 0 and (data * -1) >= self.product.buy_price:
+            raise ValidationError("Discount can not be below the buying price")
+        return data
+
 
 class ExpenseForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ExpenseForm, self).__init__(*args, **kwargs)
         self.fields["amount"].label = "Amount(TZS)"
+        self.fields["created_at"].label = "Date"
 
     class Meta:
         model = Expense
-        fields = ["name", "amount", "description"]
+        fields = ["created_at", "name", "amount", "description"]
+        widgets = {'created_at': DateInput()}
 
     def clean_amount(self):
         data = self.cleaned_data["amount"]

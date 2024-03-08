@@ -40,19 +40,6 @@
     {% block page_level_css %}
     {% endblock %}
     <!-- END Page Level CSS-->
-    <style>
-        .btn-info {
-            border-color: #E73846 !important;
-            background-color: #E73846 !important;
-            color: #FFF;
-        }
-
-        .btn-info:hover {
-    border-color: #467C9E!important;
-    background-color: #467C9E!important;
-    color: #FFF!important;
-}
-    </style>
 </head>
 <body class="vertical-layout vertical-menu-modern 1-column   menu-expanded blank-page blank-page"
       data-open="click" data-menu="vertical-menu-modern" data-col="1-column">
@@ -86,8 +73,8 @@
                                                 <a href="{% url 'password-reset' %}" class="card-link">Forgot Password?</a>
                                             </div>
                                         </div>
-                                        <button type="submit" class="btn btn-lg btn-block">
-                                            <i class="ft-unlock"></i> Ingia
+                                        <button type="submit" class="btn btn-outline-info btn-lg btn-block">
+                                            <i class="ft-unlock"></i> Login
                                         </button>
                                     </form>
                                 </div>

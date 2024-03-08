@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import AbstractUser, User
 from django.db import models
 
@@ -82,7 +84,7 @@ class StockCard(models.Model):
         null=True, blank=True,
         related_name="users",
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateField(default=datetime.datetime.now())
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -95,8 +97,9 @@ class Sale(models.Model):
     sale_price = models.FloatField()
     buy_price = models.FloatField()
     quantity = models.FloatField()
+    sale_adjustment = models.FloatField(default=0)
     description = models.TextField(null=True, blank=True)
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateField(default=datetime.datetime.now())
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -111,7 +114,7 @@ class Expense(models.Model):
     name = models.CharField(max_length=MAX_NAME_LENGTH, blank=False)
     description = models.TextField(null=True, blank=True)
     amount = models.FloatField()
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateField(default=datetime.datetime.now())
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
