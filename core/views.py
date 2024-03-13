@@ -337,7 +337,7 @@ def stock_on_hand_view(request):
     for p in products:
         model_soh = get_stock_on_hand(p, today)
         sohs.append({'product': p.name, 'product_id': p.pk, 'unit': p.unit_of_measure.code, 'quantity': model_soh})
-        context = {'sohs': sohs}
+    context = {'sohs': sohs}
     return render(request, "soh/list.html", context)
 
 
