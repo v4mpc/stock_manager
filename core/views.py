@@ -225,7 +225,7 @@ class UnitCreateView(
 class UnitUpdateView(
     PermissionRequiredMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView
 ):
-    template_name = "Units/add.html"
+    template_name = "units/add.html"
     queryset = Unit.objects.all()
     form_class = UnitCreateForm
     permission_required = ("auth.change_unit",)
