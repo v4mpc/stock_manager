@@ -1,4 +1,6 @@
+
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
     <div class="app-content content">
         <div class="content-wrapper">
@@ -11,6 +13,7 @@
 
 
             </div>
+
             <div class="content-body">
                 <!-- Zero configuration table -->
                 <section id="configuration">
@@ -76,4 +79,13 @@
             </div>
         </div>
     </div>
+
 {% endblock %}
+
+
+
+{% block extrajs %}
+                    <script src="{% static 'vendors/js/tables/datatable/datatables.min.js' %}" type="text/javascript"></script>
+
+{% endblock %}
+
