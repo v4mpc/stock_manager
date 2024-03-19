@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 
 
-./pull_images.sh $1
-
-./restart.sh $1
+git pull
+docker-compose -f docker-compose-dev.yml up -d --no-deps --force-recreate --build  web
