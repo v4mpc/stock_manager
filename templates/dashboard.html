@@ -99,7 +99,7 @@
                                 <div class="card-body">
                                     <div class="media d-flex">
                                         <div class="media-body text-left">
-                                            <h3 class="{% if total_profit > 0 %}success{% endif %} {% if total_profit <= 0 %}danger{% endif %}">{{ total_profit }}
+                                            <h3 class="{% if total_profit > 0 %}success{% endif %} {% if total_profit <= 0 %}danger{% endif %}">{{ total_profit|intcomma }}
                                                 TZS</h3>
                                             <h6>Total Profit</h6>
                                         </div>
@@ -123,7 +123,7 @@
                                 <div class="card-body">
                                     <div class="media d-flex">
                                         <div class="media-body text-left">
-                                            <h3 class="danger">{{ total_sold }}</h3>
+                                            <h3 class="danger">{{ total_sold|intcomma }}</h3>
                                             <h6>Product Quantities Sold</h6>
                                         </div>
                                         <div>
