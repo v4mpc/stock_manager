@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block page_level_css %}
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2.css">
@@ -54,7 +55,7 @@
                                 <div class="card-body">
                                     <div class="media d-flex">
                                         <div class="media-body text-left">
-                                            <h3 class="info">{{ total_sales }} TZS</h3>
+                                            <h3 class="info">{{ total_sales|intcomma }} TZS</h3>
                                             <h6>Total Sales</h6>
                                         </div>
                                         <div>
@@ -76,7 +77,7 @@
                                 <div class="card-body">
                                     <div class="media d-flex">
                                         <div class="media-body text-left">
-                                            <h3 class="warning">{{ total_expenses }} TZS</h3>
+                                            <h3 class="warning">{{ total_expenses|intcomma }} TZS</h3>
                                             <h6>Total Expenses</h6>
                                         </div>
                                         <div>
